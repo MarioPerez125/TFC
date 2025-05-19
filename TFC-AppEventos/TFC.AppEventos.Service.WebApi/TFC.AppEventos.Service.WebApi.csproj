@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\TFC.AppEventos.Application.DTO\TFC.AppEventos.Application.DTO.csproj" />
+    <ProjectReference Include="..\TFC.AppEventos.Application.Interface\TFC.AppEventos.Application.Interface.csproj" />
+    <ProjectReference Include="..\TFC.AppEventos.Application.Main\TFC.AppEventos.Application.Main.csproj" />
+    <ProjectReference Include="..\TFC.AppEventos.Database.Context\TFC.AppEventos.Database.Context.csproj" />
+    <ProjectReference Include="..\TFC.AppEventos.Domain.Entities\TFC.AppEventos.Domain.Entities.csproj" />
+    <ProjectReference Include="..\TFC.AppEventos.Interface.Repository\TFC.AppEventos.Infraestructure.Repository.csproj" />
+    <ProjectReference Include="..\TFC.AppEventos.Transversal.Utils\TFC.AppEventos.Transversal.Utils.csproj" />
+  </ItemGroup>
+
+</Project>

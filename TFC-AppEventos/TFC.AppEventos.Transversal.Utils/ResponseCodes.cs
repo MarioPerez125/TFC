@@ -1,0 +1,30 @@
+﻿namespace TFC.AppEventos.Transversal.Utils
+{
+    public enum ResponseCodes
+    {
+        OK = 0,
+        ERROR_LICENSE_NOTFOUND = 1,
+        ERROR_LICENSE_EXISTS = 2,
+        ERROR_USER_NOTFOUND = 3,
+        ERROR_BAD_PASSWORD = 4,
+        ERROR_MAXCLIENTS = 5,
+        ERROR_USEREXISTS = 6,
+        ERROR_UNIQUE_KEY_EXISTS = 7,
+        ERROR_UNIQUE_COMPUTER_KEY_ERROR = 8,
+        ERROR_CHANGING_PASSWORD = 9,
+        ERROR_BAD_EMAIL = 10,
+
+        ERROR_COMPUTER_KEY = 110,
+        ERROR_EXPIRED = 111,
+
+        ERROR_FILE_LICENSE_COMPUTER_KEY = 120,
+        ERROR_FILE_LICENSE_EXPIRED = 121,
+        ERROR_LOCAL_LICENSE_MAXCLIENTS = 122,
+
+        ERROR_LICENSE_FILE_CORRUPT = 123,
+
+        ERROR_NO_CONNECTION = 130,
+
+        ERROR_LICENSE_TYPE_NOT_VALID = 140,
+    }
+}

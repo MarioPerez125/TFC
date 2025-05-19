@@ -1,0 +1,6 @@
+@TFC.AppEventos.Service.WebApi_HostAddress = http://localhost:5263
+
+GET {{TFC.AppEventos.Service.WebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
