@@ -1,32 +1,47 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
 using TFC.AppEventos.Application.DTO;
 using TFC.AppEventos.Application.DTO.Responses;
 using TFC.AppEventos.Application.Main;
+using TFC.AppEventos.Transversal.Utils;
 
 namespace TFC.AppEventos.Service.WebApi.Controllers
 {
-    [ApiController]
     [Route("api/auth")]
+    [ApiController]
     public class AuthController : ControllerBase
     {
-
         private readonly IAuthApplication _authApplication;
+        private readonly IConfiguration _configuration;
+
+        public AuthController(IAuthApplication authApplication, IConfiguration configuration)
+        {
+            _authApplication = authApplication;
+            _configuration = configuration;
+        }
 
         /// <summary>
         /// Registra un nuevo usuario
         /// </summary>
         [HttpPost("register")]
-        public async Task<ActionResult<RegisterResponse>> Register([FromBody] AuthDto authDto)
+        public async Task<ActionResult<AuthDto>> Register([FromBody] AuthDto authDto)
         {
-            RegisterResponse registerResponse = await _authApplication.Register(authDto);
-            if (registerResponse.IsSuccess)
+            var response = await _authApplication.Register(authDto);
+
+            if (response.IsSuccess)
             {
-                return Ok(registerResponse);
+                return Ok(response.AuthDto);
             }
-            else
+
+            return BadRequest(new BaseResponse
             {
-                return BadRequest(registerResponse);
-            }
+                IsSuccess = false,
+                Message = response.Message,
+                ResponseCode = response.ResponseCode
+            });
         }
 
         /// <summary>
@@ -35,15 +50,64 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<LoginResponse>> Login([FromBody] AuthDto authDto)
         {
-            LoginResponse loginResponse = await _authApplication.Login(authDto);
-            if (loginResponse.IsSuccess)
+            var loginResponse = await _authApplication.Login(authDto);
+
+            if (!loginResponse.IsSuccess)
             {
-                return Ok(loginResponse);
+                return Unauthorized(new BaseResponse
+                {
+                    IsSuccess = false,
+                    Message = loginResponse.Message,
+                    ResponseCode = loginResponse.ResponseCode
+                });
             }
-            else
+
+            // Generar token JWT
+            var token = GenerateJwtToken(loginResponse.User);
+
+            var response = new LoginResponse
             {
-                return BadRequest(loginResponse);
-            }
+                IsSuccess = true,
+                Message = "Autenticación exitosa",
+                ResponseCode = ResponseCodes.OK,
+                AuthDto = authDto,
+                User = loginResponse.User,
+                Token = token,
+                TokenExpiration = DateTime.UtcNow.AddMonths(Convert.ToInt16(_configuration["Jwt:ExpireMonths"]))
+            };
+
+            return Ok(response);
+        }
+
+        private string GenerateJwtToken(UserDto user)
+        {
+            Console.WriteLine($"JWT Key: {_configuration["Jwt:Key"]}");
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
+            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+
+            // Crear claims con los nombres correctos
+            var claims = new List<Claim>
+    {
+        new Claim(JwtRegisteredClaimNames.Sub, user.Username),
+        new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+        new Claim("UserId", user.UserId.ToString()),
+        new Claim("username", user.Username),
+        
+        // Claim de role con el formato correcto
+        new Claim(ClaimTypes.Role, user.Role) // Esto generará "role" en lugar del nombre largo
+    };
+
+            // Si necesitas mantener compatibilidad con ambos formatos:
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"],
+                audience: _configuration["Jwt:Audience"],
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(int.Parse(_configuration["Jwt:ExpireMinutes"])),
+                signingCredentials: credentials
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
         }
     }
 }

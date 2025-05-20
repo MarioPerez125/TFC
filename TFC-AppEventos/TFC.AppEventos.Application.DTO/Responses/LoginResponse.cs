@@ -10,5 +10,8 @@ namespace TFC.AppEventos.Application.DTO.Responses
     public class LoginResponse : BaseResponse
     {
         public AuthDto AuthDto { get; set; }
+        public UserDto User { get; set; }
+        public string Token { get; set; }
+        public DateTime TokenExpiration { get; set; }
     }
 }

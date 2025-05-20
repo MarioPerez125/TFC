@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\TFC.AppEventos.Application.Main\TFC.AppEventos.Application.Main.csproj" />
     <ProjectReference Include="..\TFC.AppEventos.Database.Context\TFC.AppEventos.Database.Context.csproj" />
+    <ProjectReference Include="..\TFC.AppEventos.Infraestructure.Interface\TFC.AppEventos.Infraestructure.Interface.csproj" />
   </ItemGroup>
 
 </Project>

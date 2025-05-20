@@ -1,0 +1,27 @@
+meta {
+  name: post /api/fighters copy
+  type: http
+  seq: 4
+}
+
+post {
+  url: http://localhost:5263/api/fighters/register-as-fighter
+  body: json
+  auth: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJtYXJpbyIsImp0aSI6ImU2MmEwNjg3LTZjN2YtNGUwMC05MzBlLTczYjQ5N2IxMjA1YSIsIlVzZXJJZCI6IjI0IiwidXNlcm5hbWUiOiJtYXJpbyIsImh0dHA6Ly9zY2hlbWFzLm1pY3Jvc29mdC5jb20vd3MvMjAwOC8wNi9pZGVudGl0eS9jbGFpbXMvcm9sZSI6IlVzZXIiLCJleHAiOjE3NTAzMzUxODYsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTI2MyIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTI2MyJ9.HvJQtuOsdjSihh5xbZH7Kv3dhUzUSIBAnwae04YRHv8
+}
+
+body:json {
+  {
+    "userId": "24",
+    "weightClass": "Welter",
+    "height": "1.80",
+    "reach": "2",
+    "wins": "0",
+    "losses": "0",
+    "draws": "0"
+  }
+}

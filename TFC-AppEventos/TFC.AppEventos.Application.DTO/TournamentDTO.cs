@@ -15,5 +15,6 @@ namespace TFC.AppEventos.Application.DTO
         public string SportType { get; set; }
         public string Status { get; set; }
         public int OrganizerId { get; set; }
+        public List<FighterDto> Participants { get; set; }
     }
 }

@@ -1,0 +1,25 @@
+meta {
+  name: post /api/fighters
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/api/fighters
+  body: json
+  auth: none
+}
+
+body:json {
+  {
+    "fighterId": "",
+    "userId": "",
+    "tournamentId": "",
+    "weightClass": "",
+    "height": "",
+    "reach": "",
+    "wins": "",
+    "losses": "",
+    "draws": ""
+  }
+}

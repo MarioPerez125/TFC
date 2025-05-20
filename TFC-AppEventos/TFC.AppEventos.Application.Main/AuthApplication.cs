@@ -2,6 +2,7 @@
 using TFC.AppEventos.Transversal.Utils;
 using System.Text.RegularExpressions;
 using TFC.AppEventos.Application.DTO.Responses;
+using TFC.AppEventos.Infraestructure.Interface.IAuthRepository;
 
 namespace TFC.AppEventos.Application.Main
 {
@@ -39,18 +40,6 @@ namespace TFC.AppEventos.Application.Main
                     throw new Exception("La contraseña es requerida");
                 }
 
-                if (string.IsNullOrWhiteSpace(authDto.Email))
-                {
-                    response.ResponseCode = ResponseCodes.ERROR_BAD_EMAIL;
-                    throw new Exception("El email es requerido");
-                }
-
-                // Validación simple de email
-                if (!authDto.Email.Contains("@"))
-                {
-                    response.ResponseCode = ResponseCodes.ERROR_BAD_EMAIL;
-                    throw new Exception("El email no es válido");
-                }
 
 
                 // Llamada al repositorio
@@ -95,6 +84,19 @@ namespace TFC.AppEventos.Application.Main
                 {
                     response.ResponseCode = ResponseCodes.ERROR_BAD_PASSWORD;
                     throw new Exception("La contraseña debe tener al menos 6 caracteres");
+                }
+
+                if (string.IsNullOrWhiteSpace(authDto.Email))
+                {
+                    response.ResponseCode = ResponseCodes.ERROR_BAD_EMAIL;
+                    throw new Exception("El email es requerido");
+                }
+
+                // Validación simple de email
+                if (!authDto.Email.Contains("@"))
+                {
+                    response.ResponseCode = ResponseCodes.ERROR_BAD_EMAIL;
+                    throw new Exception("El email no es válido");
                 }
                 // Llamada al repositorio
                 return await _authRepository.Register(authDto);

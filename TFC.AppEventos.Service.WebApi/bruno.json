@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "TFC.AppEventos.Service.WebApi",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}

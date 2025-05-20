@@ -1,15 +1,18 @@
-﻿namespace TFC.AppEventos.Domain.Entities
+﻿using TFC.AppEventos.Domain.Entities.Enum;
+
+namespace TFC.AppEventos.Domain.Entities
 {
     public class User
     {
-        public int UserId { get; set; }
+        public int? UserId { get; set; }
         public string Username { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
-        public string Role { get; set; } // "Admin", "Organizer", "Fighter"
+        public string? Role { get; set; } = Roles.User.ToString();
 
         // Relaciones
-        public ICollection<Tournament> OrganizedTournaments { get; set; }
-        public ICollection<Fighter> FighterRegistrations { get; set; }
+        public ICollection<Tournament>? OrganizedTournaments { get; set; }
+        public ICollection<Fighter>? FighterRegistrations { get; set; }
     }
 }
+

@@ -16,6 +16,7 @@ namespace TFC.AppEventos.Domain.Entities
         public string Status { get; set; } = "Planned"; // "Planned", "Ongoing", "Completed"
 
         // Clave foránea
+        public int OrganizerId { get; set; }
         public User Organizer { get; set; }
 
         // Relaciones

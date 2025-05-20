@@ -6,4 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\TFC.AppEventos.Application.DTO\TFC.AppEventos.Application.DTO.csproj" />
+  </ItemGroup>
+
 </Project>
