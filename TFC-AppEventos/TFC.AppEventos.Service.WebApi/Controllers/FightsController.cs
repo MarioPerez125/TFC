@@ -16,9 +16,17 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
         /// Programa un nuevo combate
         /// </summary>
         [HttpPost]
-        public async Task<ActionResult<FightDto>> Schedule([FromBody] FightDto fightDto1, FightDto fightDto2)
+        public async Task<ActionResult> Schedule([FromBody] FightDto fightDto)
         {
             OrganizarPeleaResponse response = await _fightApplication.ScheduleFight(fightDto);
+            if (response.IsSuccess)
+            {
+                return Ok(response);
+            }
+            else
+            {
+                return BadRequest(response.Message);
+            }
         }
 
         /// <summary>

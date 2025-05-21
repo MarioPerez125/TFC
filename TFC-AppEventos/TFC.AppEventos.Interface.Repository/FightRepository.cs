@@ -24,7 +24,7 @@ namespace TFC.AppEventos.Infraestructure.Repository
             Fight fight = new Fight
             {
                 Fighter1Id = fightDto1.Fighter1Id,
-                Fighter2Id = fightDto2.Fighter2Id,
+
                 TournamentId = fightDto1.TournamentId,
              };
         }
