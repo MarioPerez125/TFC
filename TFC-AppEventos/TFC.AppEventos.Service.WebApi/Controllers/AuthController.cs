@@ -35,13 +35,10 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
             {
                 return Ok(response.AuthDto);
             }
-
-            return BadRequest(new BaseResponse
+            else
             {
-                IsSuccess = false,
-                Message = response.Message,
-                ResponseCode = response.ResponseCode
-            });
+                return BadRequest(response.Message);
+            }
         }
 
         /// <summary>
@@ -52,31 +49,45 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
         {
             var loginResponse = await _authApplication.Login(authDto);
 
-            if (!loginResponse.IsSuccess)
+            if (loginResponse.IsSuccess)
             {
-                return Unauthorized(new BaseResponse
+                // Generar token JWT
+                var token = GenerateJwtToken(loginResponse.User);
+
+                var response = new LoginResponse
                 {
-                    IsSuccess = false,
-                    Message = loginResponse.Message,
-                    ResponseCode = loginResponse.ResponseCode
-                });
+                    IsSuccess = true,
+                    Message = "Autenticación exitosa",
+                    ResponseCode = ResponseCodes.OK,
+                    AuthDto = authDto,
+                    User = loginResponse.User,
+                    Token = token,
+                    TokenExpiration = DateTime.UtcNow.AddMonths(Convert.ToInt16(_configuration["Jwt:ExpireMonths"]))
+                };
+
+                return Ok(response);
+            }
+            else
+            {
+                return BadRequest(loginResponse.Message);
             }
 
-            // Generar token JWT
-            var token = GenerateJwtToken(loginResponse.User);
 
-            var response = new LoginResponse
+        }
+
+        [HttpPost("register-as-organizer")]
+        public async Task<ActionResult<AuthDto>> RegisterAsOrganizer([FromBody] AuthDto authDto)
+        {
+            RegisterResponse response = await _authApplication.RegisterAsOrganizer(authDto);
+
+            if (response.IsSuccess)
             {
-                IsSuccess = true,
-                Message = "Autenticación exitosa",
-                ResponseCode = ResponseCodes.OK,
-                AuthDto = authDto,
-                User = loginResponse.User,
-                Token = token,
-                TokenExpiration = DateTime.UtcNow.AddMonths(Convert.ToInt16(_configuration["Jwt:ExpireMonths"]))
-            };
-
-            return Ok(response);
+                return Ok(response.AuthDto);
+            }
+            else
+            {
+                return BadRequest(response.Message);
+            }
         }
 
         private string GenerateJwtToken(UserDto user)

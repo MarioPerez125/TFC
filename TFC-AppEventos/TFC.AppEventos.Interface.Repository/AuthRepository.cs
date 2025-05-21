@@ -87,5 +87,48 @@ namespace TFC.AppEventos.Infraestructure.Repository.AuthRepository
                 return response;
             }
         }
+
+        public async Task<RegisterResponse> RegisterAsOrganizer(AuthDto authDto)
+        {
+            RegisterResponse response = new RegisterResponse();
+
+            User user = new User
+            {
+                Username = authDto.Username,
+                Password = PasswordUtils.PasswordEncoder(authDto.Password),
+                Email = authDto.Email,
+                Role = Roles.Organizer.ToString()
+            };
+
+            User? user2 = await _context.Users
+                .FirstOrDefaultAsync(u => u.Email == authDto.Email && u.Password == authDto.Password && u.Username == authDto.Username);
+            try
+            {
+                if (user != null)
+                {
+                    await _context.Users.AddAsync(user);
+                    await _context.SaveChangesAsync();
+
+                    response.IsSuccess = true;
+                    response.Message = "Usuario registrado correctamente";
+                    response.AuthDto = authDto;
+                    return response;
+
+                }
+                else
+                {
+                    response.IsSuccess = false;
+                    response.Message = "Usuario ya existe";
+                    return response;
+                }
+
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+                response.Message = "Error al registrar el usuario: " + ex.Message;
+                return response;
+            }
+        }
     }
 }

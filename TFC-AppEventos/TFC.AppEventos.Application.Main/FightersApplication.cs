@@ -21,11 +21,11 @@ namespace TFC.AppEventos.Application.Main
             _fightersRepository = fightersRepository;
         }
 
-        public async Task<GetMyTournamentsResponse> GetMyTournaments(int userId)
+        public async Task<GetMyTournamentsAsFighterResponse> GetMyTournamentsAsFighter(int userId)
         {
             if (userId <= 0)
             {
-                GetMyTournamentsResponse response = new GetMyTournamentsResponse
+                GetMyTournamentsAsFighterResponse response = new GetMyTournamentsAsFighterResponse
                 {
                     IsSuccess = false,
                     Message = "El ID de usuario no puede ser menor o igual a cero."
@@ -34,11 +34,11 @@ namespace TFC.AppEventos.Application.Main
             }
             else
             {
-                return await _fightersRepository.GetMyTournaments(userId);
+                return await _fightersRepository.GetMyTournamentsAsFighter(userId);
             }
         }
 
-        public async Task<RegisterFighterResponse> RegisterFighter(FighterDto fighterDto)
+        public async Task<RegisterFighterResponse> RegisterFighter(FightersDTO fighterDto)
         {
             RegisterFighterResponse response = new RegisterFighterResponse();
 

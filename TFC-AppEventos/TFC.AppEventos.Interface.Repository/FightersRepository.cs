@@ -22,53 +22,43 @@ namespace TFC.AppEventos.Infraestructure.Repository
             _context = context;
         }
 
-        public async Task<GetMyTournamentsResponse> GetMyTournaments(int userId)
+        public async Task<GetMyTournamentsAsFighterResponse> GetMyTournamentsAsFighter(int userId)
         {
-            GetMyTournamentsResponse response = new GetMyTournamentsResponse();
+            GetMyTournamentsAsFighterResponse response = new GetMyTournamentsAsFighterResponse();
 
-            Fighter? fighter = _context.Fighters.FirstOrDefault(f => f.UserId == userId);
-
-            IEnumerable<Tournament> tournaments = _context.Tournaments
-                .Include(t => t.Participants)
-                .Where(t => t.Participants.Any(f => f.UserId == userId))
-                .ToList();
-
-            if (tournaments != null && tournaments.Any())
+            try
             {
-                response.Tournaments = tournaments.Select(t => new TournamentDto
-                {
-                    TournamentId = t.TournamentId,
-                    Name = t.Name,
-                    StartDate = t.StartDate,
-                    EndDate = t.EndDate,
-                    OrganizerId = t.OrganizerId,
-                    Status = t.Status,
-                    SportType = t.SportType,
-                    Participants = t.Participants.Select(p => new FighterDto
-                    {
-                        UserId = p.UserId,
-                        Wins = p.Wins,
-                        Losses = p.Losses,
-                        Draws = p.Draws,
-                        WeightClass = p.WeightClass,
-                        Height = p.Height,
-                        Reach = p.Reach
-                    }).ToList()
-                }).ToList();
+                Fighters? fighter = _context.Fighters.FirstOrDefault(f => f.UserId == userId);
 
+                IEnumerable<TournamentDto> tournaments = await _context.Fights
+                    .Where(f => f.Fighter1.UserId == userId || f.Fighter2.UserId == userId)
+                        .Select(f => f.Tournament)
+                            .Distinct()
+                                .Select(t => new TournamentDto
+                                {
+                                    TournamentId = t.TournamentId,
+                                    location = t.Name,
+                                    StartDate = t.StartDate,
+                                    EndDate = t.EndDate,
+                                    OrganizerId = t.OrganizerId,
+                                    SportType = t.SportType
+                                })
+                                .ToListAsync();
+
+                response.Tournaments = tournaments;
                 response.IsSuccess = true;
                 response.Message = "Torneos obtenidos correctamente";
                 return response;
             }
-            else
+            catch
             {
                 response.IsSuccess = false;
                 response.Message = "No se encontraron torneos para el luchador";
                 return response;
             }
         }
-
-        public async Task<RegisterFighterResponse> RegisterFighter(FighterDto fighterDto)
+        
+        public async Task<RegisterFighterResponse> RegisterFighter(FightersDTO fighterDto)
         {
             RegisterFighterResponse response = new RegisterFighterResponse();
 
@@ -77,7 +67,7 @@ namespace TFC.AppEventos.Infraestructure.Repository
             if (user != null)
             {
                 user.Role = Roles.Fighter.ToString();
-                Fighter fighter = new Fighter
+                Fighters fighter = new Fighters
                 {
                     UserId = fighterDto.UserId,
                     Wins = fighterDto.Wins,
@@ -88,6 +78,7 @@ namespace TFC.AppEventos.Infraestructure.Repository
                     Reach = fighterDto.Reach
                 };
                 await _context.Fighters.AddAsync(fighter);
+                Console.WriteLine(fighter.ToString());
                 await _context.SaveChangesAsync();
 
                 response.Fighter = fighterDto;
@@ -105,7 +96,7 @@ namespace TFC.AppEventos.Infraestructure.Repository
 
         public async Task<bool> UnregisterFighter(int id)
         {
-            Fighter? fighter = await _context.Fighters.FirstOrDefaultAsync(f => f.UserId == id);
+            Fighters? fighter = await _context.Fighters.FirstOrDefaultAsync(f => f.UserId == id);
             if (fighter != null)
             {
                 _context.Fighters.Remove(fighter);

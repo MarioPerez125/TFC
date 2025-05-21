@@ -7,8 +7,9 @@ using TFC.AppEventos.Transversal.Utils;
 
 namespace TFC.AppEventos.Application.DTO.Responses
 {
-    public class GetMyTournamentsResponse : BaseResponse
+    public class CreateTournamentResponse : BaseResponse
     {
-        public IEnumerable<TournamentDto> Tournaments { get; set; }
+        public TournamentDto Tournament { get; set; }
+    
     }
 }

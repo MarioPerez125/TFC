@@ -11,8 +11,6 @@ namespace TFC.AppEventos.Domain.Entities
         public string? Role { get; set; } = Roles.User.ToString();
 
         // Relaciones
-        public ICollection<Tournament>? OrganizedTournaments { get; set; }
-        public ICollection<Fighter>? FighterRegistrations { get; set; }
     }
 }
 

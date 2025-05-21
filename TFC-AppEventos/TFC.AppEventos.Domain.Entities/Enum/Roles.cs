@@ -8,9 +8,9 @@ namespace TFC.AppEventos.Domain.Entities.Enum
 {
     public enum Roles
     {
-        User,
-        Admin,
-        Organizer,
-        Fighter
+        User = 0,
+        Fighter = 1,
+        Organizer = 2,
+        Admin = 3
     }
 }

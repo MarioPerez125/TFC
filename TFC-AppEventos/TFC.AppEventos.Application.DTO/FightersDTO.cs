@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TFC.AppEventos.Application.DTO
 {
-    public class FighterDto
+    public class FightersDTO
     {
         public int UserId { get; set; }
         public string WeightClass { get; set; }

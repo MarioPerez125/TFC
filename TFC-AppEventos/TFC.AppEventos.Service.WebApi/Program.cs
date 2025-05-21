@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using System.Text;
 using TFC.AppEventos.Application.Interface;
 using TFC.AppEventos.Application.Main;
@@ -30,8 +31,13 @@ namespace TFC.AppEventos.Service.WebApi
 
             builder.Services.AddScoped<IAuthApplication, AuthApplication>();
             builder.Services.AddScoped<IAuthRepository, AuthRepository>();
-            builder.Services.AddScoped<IFightersApplication,  FightersApplication>();
+            builder.Services.AddScoped<IFightersApplication, FightersApplication>();
             builder.Services.AddScoped<IFightersRepository, FightersRepository>();
+            builder.Services.AddScoped<ITournamentApplication, TournamentApplication>();
+            builder.Services.AddScoped<ITournamentRepository, TournamentRepository>();
+            builder.Services.AddScoped<IFightApplication, FightApplication>();
+            builder.Services.AddScoped<IFightRepository, FightRepository>();
+
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("SQLServerConnection")));
 
@@ -60,6 +66,40 @@ namespace TFC.AppEventos.Service.WebApi
                     ValidateLifetime = true,
                     ClockSkew = TimeSpan.Zero
                 };
+            });
+
+            // Agregar después de builder.Services.AddSwaggerGen()
+            builder.Services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo { Title = "TFC AppEventos API", Version = "v1" });
+
+                // Configuración para JWT
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                },
+                Scheme = "oauth2",
+                Name = "Bearer",
+                In = ParameterLocation.Header,
+            },
+            new List<string>()
+        }
+    });
             });
 
             // ... resto de configuraciones

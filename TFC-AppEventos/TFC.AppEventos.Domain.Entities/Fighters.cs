@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace TFC.AppEventos.Domain.Entities
 {
-    public class Fighter
+    public class Fighters
     {
+        [Key]
         public int FighterId { get; set; }
         public string WeightClass { get; set; }
         public int Height { get; set; } = 0; // Default value
@@ -18,7 +20,6 @@ namespace TFC.AppEventos.Domain.Entities
 
         // Claves foráneas
         public int UserId { get; set; }
-        public User User { get; set; }
         
     }
 }

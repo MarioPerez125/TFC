@@ -13,14 +13,8 @@ namespace TFC.AppEventos.Domain.Entities
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public string SportType { get; set; } // "MMA", "Judo", etc.
-        public string Status { get; set; } = "Planned"; // "Planned", "Ongoing", "Completed"
-
         // Clave foránea
         public int OrganizerId { get; set; }
-        public User Organizer { get; set; }
 
-        // Relaciones
-        public ICollection<Fighter> Participants { get; set; }
-        public ICollection<Fight> Fights { get; set; }
     }
 }

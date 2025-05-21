@@ -7,8 +7,9 @@ using TFC.AppEventos.Transversal.Utils;
 
 namespace TFC.AppEventos.Application.DTO.Responses
 {
-    public class RegisterFighterResponse : BaseResponse
+    public class GetAllParticipantsResponse : BaseResponse
     {
-        public FightersDTO Fighter { get; set; } = new FightersDTO();
+        public IEnumerable<FightersDTO>? Participants { get; set; }
     }
+    
 }

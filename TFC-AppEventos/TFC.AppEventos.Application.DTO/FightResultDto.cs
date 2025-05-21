@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TFC.AppEventos.Application.DTO
 {
-    class FightResultDto
+    public class FightResultDto
     {
         public int FightId { get; set; }
         public int? WinnerId { get; set; }

@@ -8,6 +8,7 @@ using TFC.AppEventos.Domain.Entities.Enum;
 
 namespace TFC.AppEventos.Service.WebApi.Controllers
 {
+    [ApiController]
     [Route("api/fighters")]
     [Authorize]
     public class FightersController : ControllerBase
@@ -26,7 +27,7 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
         /// </summary>
         [HttpPost("register-as-fighter")]
         [Authorize(Roles = "User")]
-        public async Task<ActionResult<FighterDto>> Register([FromBody] FighterDto fighterDto)
+        public async Task<ActionResult<FightersDTO>> Register([FromBody] FightersDTO fighterDto)
         {
             RegisterFighterResponse response = await _fightersApplication.RegisterFighter(fighterDto);
 
@@ -40,30 +41,11 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
             }
         }
 
-        [HttpGet("me")]
-        [Authorize]
-        public IActionResult GetMe()
-        {
-            try
-            {
-                var username = User.Identity?.Name;
-                var roles = User.Claims
-                    .Where(c => c.Type == ClaimTypes.Role)
-                    .Select(c => c.Value);
-
-                return Ok(new { username, roles });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { error = ex.Message, stack = ex.StackTrace });
-            }
-        }
-
         /// <summary>
         /// Elimina un participante de un torneo (Solo el propio luchador, organizador o admin)
         /// </summary>
         [HttpDelete("{id}")]
-        [Authorize(Roles = nameof(Roles.User))]
+        [Authorize(Roles = nameof(Roles.Organizer))]
         public async Task<IActionResult> Unregister(int id)
         {
             bool boolean = await _fightersApplication.UnregisterFighter(id);
@@ -82,13 +64,12 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
         /// Obtiene los torneos en los que participa el usuario actual
         /// </summary>
         [HttpGet("my-tournaments")]
-        [Authorize(Roles = "Fighter")]
+        [Authorize(Roles = nameof(Roles.Fighter))]
         public async Task<ActionResult<IEnumerable<TournamentDto>>> GetMyTournaments()
         {
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-            Console.WriteLine($"UserId: {userId}");
 
-            GetMyTournamentsResponse response = await _fightersApplication.GetMyTournaments(userId);
+            GetMyTournamentsAsFighterResponse response = await _fightersApplication.GetMyTournamentsAsFighter(userId);
 
             if (response.IsSuccess)
             {

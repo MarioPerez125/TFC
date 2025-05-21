@@ -8,10 +8,8 @@ using TFC.AppEventos.Application.DTO.Responses;
 
 namespace TFC.AppEventos.Application.Interface
 {
-    public interface IFightersApplication
+    public interface IFightApplication
     {
-        Task<GetMyTournamentsAsFighterResponse> GetMyTournamentsAsFighter(int userId);
-        Task<RegisterFighterResponse> RegisterFighter(FightersDTO fighterDto);
-        Task<bool> UnregisterFighter(int id);
+        Task<OrganizarPeleaResponse> ScheduleFight(FightDto fightDto);
     }
 }
