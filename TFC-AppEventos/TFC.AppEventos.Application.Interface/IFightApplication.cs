@@ -10,6 +10,8 @@ namespace TFC.AppEventos.Application.Interface
 {
     public interface IFightApplication
     {
+        Task<GetFightsByTournamentResponse> GetFightsByTournament(int tournamentId);
         Task<OrganizarPeleaResponse> ScheduleFight(FightDto fightDto);
+        Task<object?> SetAWinner(FightResultDto resultDto);
     }
 }

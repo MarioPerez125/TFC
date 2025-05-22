@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,14 +20,113 @@ namespace TFC.AppEventos.Infraestructure.Repository
             _context = context;
         }
 
-        public Task<OrganizarPeleaResponse> ScheduleFight(FightDto fightDto1)
+        public async Task<GetFightsByTournamentResponse> GetFightsByTournament(int tournamentId)
         {
-            Fight fight = new Fight
+            GetFightsByTournamentResponse response = new GetFightsByTournamentResponse();
+            try
             {
-                Fighter1Id = fightDto1.Fighter1Id,
 
-                TournamentId = fightDto1.TournamentId,
-             };
+                List<Fight> fights = await _context.Fights
+                    .Where(f => f.TournamentId == tournamentId).ToListAsync();
+
+                if (fights == null || fights.Count == 0)
+                {
+                    throw new Exception("No fights found for the specified tournament.");
+                }
+                else
+                {
+                    fights.ForEach(f =>
+                    {
+                        response.Fights.Add(new FightDto
+                        {
+                            FightId = f.FightId,
+                            Fighter1Id = f.Fighter1Id,
+                            Fighter2Id = f.Fighter2Id,
+                            ScheduledTime = f.ScheduledTime,
+                            TournamentId = f.TournamentId,
+                            Status = f.Status,
+                            WinnerId = f.WinnerId
+
+                        });
+                    });
+
+                    response.IsSuccess = true;
+                    response.Message = "Fights retrieved successfully.";
+                }
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+                response.Message = "Error retrieving fights: " + ex.Message;
+
+            }
+            return response;
+        }
+
+        public async Task<OrganizarPeleaResponse> ScheduleFight(FightDto fightDto)
+        {
+            OrganizarPeleaResponse response = new OrganizarPeleaResponse();
+
+            try
+            {
+
+                Fight fight = new Fight
+                {
+                    Fighter1Id = fightDto.Fighter1Id,
+                    Fighter2Id = fightDto.Fighter2Id,
+                    ScheduledTime = fightDto.ScheduledTime,
+                    TournamentId = fightDto.TournamentId,
+                };
+                await _context.Fights.AddAsync(fight);
+                await _context.SaveChangesAsync();
+                response.IsSuccess = true;
+                response.Message = "Fight scheduled successfully.";
+
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+                response.Message = "Error scheduling fight: " + ex.Message;
+
+            }
+            return response;
+        }
+
+        public async Task<object?> SetAWinner(FightResultDto resultDto)
+        {
+            Fight? fight = await _context.Fights.FirstOrDefaultAsync(f => f.FightId == resultDto.FightId);
+            if (fight == null)
+            {
+                return new { IsSuccess = false, Message = "Fight not found." };
+            }
+            else
+            {
+                fight.WinnerId = resultDto.WinnerId;
+                fight.Status = "Completed";
+                await _context.SaveChangesAsync();
+
+                FightResult fightResult = new FightResult
+                {
+                    FightId = resultDto.FightId,
+                    WinnerId = resultDto.WinnerId,
+                    Duration = resultDto.Duration,
+                    Method = resultDto.Method
+
+                };
+                Fighters? fighter = await _context.Fighters.FirstOrDefaultAsync(f => f.FighterId == resultDto.WinnerId);
+                fighter.Wins += 1;
+                await _context.SaveChangesAsync();
+
+                Fighters? loserFighter = await _context.Fighters.FirstOrDefaultAsync(f => f.FighterId == resultDto.LooserId);
+                loserFighter.Losses += 1;
+                await _context.SaveChangesAsync();
+
+
+                await _context.FightResults.AddAsync(fightResult);
+                await _context.SaveChangesAsync();
+                return new { IsSuccess = true, Message = "Winner set successfully." };
+            }
+
         }
     }
 }

@@ -8,7 +8,7 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
 {
     [ApiController]
     [Route("api/fights")]
-    [Authorize(Roles = "Organizer,Admin")]
+
     public class FightsController : ControllerBase
     {
         private readonly IFightApplication _fightApplication;
@@ -16,6 +16,7 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
         /// Programa un nuevo combate
         /// </summary>
         [HttpPost]
+        [Authorize(Roles = "Organizer,Admin")]
         public async Task<ActionResult> Schedule([FromBody] FightDto fightDto)
         {
             OrganizarPeleaResponse response = await _fightApplication.ScheduleFight(fightDto);
@@ -32,18 +33,31 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
         /// <summary>
         /// Obtiene todos los combates de un torneo
         /// </summary>
-        //[HttpGet("tournament/{tournamentId}")]
-        //public async Task<ActionResult<IEnumerable<FightDto>>> GetByTournament(int tournamentId)
-        //{
-        //}
+        [HttpGet("tournament/{tournamentId}")]
+        public async Task<ActionResult<List<FightDto>>> GetByTournament(int tournamentId)
+        {
+            GetFightsByTournamentResponse response = await _fightApplication.GetFightsByTournament(tournamentId);
+
+            if (response.IsSuccess)
+            {
+                return Ok(response.Fights);
+            }
+            else
+            {
+                return BadRequest(response.Message);
+            }
+        }
 
         /// <summary>
         /// Actualiza el resultado de un combate
         /// </summary>
-        //[HttpPut("{id}/result")]
-        //public async Task<IActionResult> SetResult(int id, [FromBody] FightResultDto resultDto)
-        //{
-        //}
+        [Authorize(Roles = "Organizer,Admin")]
+        [HttpPut("{id}/result")]
+        public async Task<IActionResult> SetResult([FromBody] FightResultDto resultDto)
+        {
+
+            return Ok(await _fightApplication.SetAWinner(resultDto));
+        }
 
         /// <summary>
         /// Obtiene los combates de un participante específico
@@ -57,6 +71,7 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
         /// Cancela un combate programado
         /// </summary>
         //[HttpPut("{id}/cancel")]
+        //[Authorize(Roles = "Organizer,Admin")]
         //public async Task<IActionResult> Cancel(int id)
         //{
         //}

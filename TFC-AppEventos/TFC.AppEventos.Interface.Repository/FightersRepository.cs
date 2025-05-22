@@ -28,22 +28,28 @@ namespace TFC.AppEventos.Infraestructure.Repository
 
             try
             {
+
                 Fighters? fighter = _context.Fighters.FirstOrDefault(f => f.UserId == userId);
 
-                IEnumerable<TournamentDto> tournaments = await _context.Fights
-                    .Where(f => f.Fighter1.UserId == userId || f.Fighter2.UserId == userId)
-                        .Select(f => f.Tournament)
-                            .Distinct()
-                                .Select(t => new TournamentDto
-                                {
-                                    TournamentId = t.TournamentId,
-                                    location = t.Name,
-                                    StartDate = t.StartDate,
-                                    EndDate = t.EndDate,
-                                    OrganizerId = t.OrganizerId,
-                                    SportType = t.SportType
-                                })
-                                .ToListAsync();
+                var tournamentIds = await _context.Fights
+    .Where(f => f.Fighter1Id == fighter.FighterId || f.Fighter2Id == fighter.FighterId)
+    .Select(f => f.TournamentId)
+    .Distinct()
+    .ToListAsync();
+
+                IEnumerable<TournamentDto> tournaments = await _context.Tournaments
+                    .Where(t => tournamentIds.Contains(t.TournamentId))
+                    .Select(t => new TournamentDto
+                    {
+                        TournamentId = t.TournamentId,
+                        location = t.Name,
+                        StartDate = t.StartDate,
+                        EndDate = t.EndDate,
+                        OrganizerId = t.OrganizerId,
+                        SportType = t.SportType
+                    })
+                    .ToListAsync();
+
 
                 response.Tournaments = tournaments;
                 response.IsSuccess = true;

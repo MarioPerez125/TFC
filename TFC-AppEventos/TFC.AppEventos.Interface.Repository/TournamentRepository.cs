@@ -65,10 +65,18 @@ namespace TFC.AppEventos.Infraestructure.Repository
             try
             {
                 // Incluye las peleas del torneo y los luchadores de cada pelea
-                var fighters = await _context.Fights
+                var fightFighterIds = await _context.Fights
                     .Where(f => f.TournamentId == tournamentId)
-                    .SelectMany(f => new[] { f.Fighter1, f.Fighter2 })
+                    .Select(f => new { f.Fighter1Id, f.Fighter2Id })
+                    .ToListAsync();
+
+                var fighterIds = fightFighterIds
+                    .SelectMany(f => new[] { f.Fighter1Id, f.Fighter2Id })
                     .Distinct()
+                    .ToList();
+
+                var fighters = await _context.Fighters
+                    .Where(f => fighterIds.Contains(f.FighterId))
                     .ToListAsync();
 
                 response.Participants = fighters

@@ -14,6 +14,7 @@ namespace TFC.AppEventos.Database.Context
         public DbSet<Fight> Fights { get; set; }
         public DbSet<Fighters> Fighters { get; set; }
         public DbSet<Tournament> Tournaments { get; set; }
+        public DbSet<FightResult> FightResults { get; set; }
 
     }
 }

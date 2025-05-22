@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TFC.AppEventos.Application.DTO
+namespace TFC.AppEventos.Domain.Entities
 {
-    public class FightResultDto
+    public class FightResult
     {
+        public int FightResultId { get; set; }
         public int FightId { get; set; }
         public int? WinnerId { get; set; }
-        public int? LooserId { get; set; }
         public string Method { get; set; } // KO, TKO, Submission, Decision, etc.
         public TimeSpan? Duration { get; set; } // Duration of the fight
     }
