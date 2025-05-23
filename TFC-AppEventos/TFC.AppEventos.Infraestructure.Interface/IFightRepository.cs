@@ -11,6 +11,7 @@ namespace TFC.AppEventos.Infraestructure.Interface
     public interface IFightRepository
     {
         Task<GetFightsByTournamentResponse> GetFightsByTournament(int tournamentId);
+        Task<GetMyFightsResponse> GetMyFights(int userId);
         Task<OrganizarPeleaResponse> ScheduleFight(FightDto fightDto);
         Task<object?> SetAWinner(FightResultDto resultDto);
     }

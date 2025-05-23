@@ -21,6 +21,25 @@ namespace TFC.AppEventos.Application.Main
             _fightersRepository = fightersRepository;
         }
 
+        public async Task<GetFighterInfoResponse> GetFighterInfo(int userId)
+        {
+            GetFighterInfoResponse response = new GetFighterInfoResponse();
+            try
+            {
+                if (userId <= 0)
+                {
+                    throw new Exception("El ID del luchador no puede ser menor o igual a cero");
+                }
+                return await _fightersRepository.GetFighterInfo(userId);
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+                response.Message = $"Error al obtener la información del luchador: {ex.Message}";
+                return response;
+            }
+        }
+
         public async Task<GetMyTournamentsAsFighterResponse> GetMyTournamentsAsFighter(int userId)
         {
             if (userId <= 0)

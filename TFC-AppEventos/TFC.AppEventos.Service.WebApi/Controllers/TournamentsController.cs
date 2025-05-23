@@ -41,7 +41,7 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
             }
             else
             {
-                return NotFound(response.Message);
+                return Ok(response.Tournament);
             }
         }
 
@@ -49,12 +49,14 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
         /// Crea un nuevo torneo (Requiere rol Organizer o Admin)
         /// </summary>
         [HttpPost("create-tournament")]
-        [Authorize(Roles = nameof(Roles.Organizer) + ","+ nameof(Roles.Admin))]
+        //[Authorize(Roles = nameof(Roles.Organizer) + ","+ nameof(Roles.Admin))]
         public async Task<ActionResult<TournamentDto>> Create([FromBody] TournamentDto tournamentDto)
         {
             CreateTournamentResponse response = new CreateTournamentResponse();
-            var organizerId = int.Parse(User.FindFirst("UserId")?.Value);
-            Console.WriteLine($"Organizer ID: {organizerId}");
+
+            tournamentDto.EndDate = tournamentDto.StartDate.AddHours(6);
+
+            int organizerId = tournamentDto.OrganizerId;
 
             response = await _tournamentsApplication.CreateTournament(tournamentDto, organizerId);
 
@@ -102,7 +104,7 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
             }
             else
             {
-                return NotFound(response.Message);
+                return Ok(response.Participants);
             }
         }
     }

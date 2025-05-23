@@ -30,7 +30,7 @@ namespace TFC.AppEventos.Infraestructure.Repository
                 Tournament tournament = new Tournament();
                 tournament.Name = tournamentDto.location;
                 tournament.StartDate = tournamentDto.StartDate;
-                tournament.EndDate = tournamentDto.StartDate.AddHours(6);
+                tournament.EndDate = tournamentDto.EndDate;
                 tournament.SportType = tournamentDto.SportType;
                 tournament.OrganizerId = organizerId;
 
@@ -65,19 +65,22 @@ namespace TFC.AppEventos.Infraestructure.Repository
             try
             {
                 // Incluye las peleas del torneo y los luchadores de cada pelea
-                var fightFighterIds = await _context.Fights
-                    .Where(f => f.TournamentId == tournamentId)
-                    .Select(f => new { f.Fighter1Id, f.Fighter2Id })
-                    .ToListAsync();
+                var fighter1Query = from fight in _context.Fights
+                                    where fight.TournamentId == tournamentId
+                                    select fight.Fighter1Id;
 
-                var fighterIds = fightFighterIds
-                    .SelectMany(f => new[] { f.Fighter1Id, f.Fighter2Id })
-                    .Distinct()
-                    .ToList();
+                var fighter2Query = from fight in _context.Fights
+                                    where fight.TournamentId == tournamentId
+                                    select fight.Fighter2Id;
 
-                var fighters = await _context.Fighters
-                    .Where(f => fighterIds.Contains(f.FighterId))
-                    .ToListAsync();
+                var allFighterIds = fighter1Query
+                    .Union(fighter2Query);
+
+                var fighters = await (
+                    from f in _context.Fighters
+                    join id in allFighterIds on f.FighterId equals id
+                    select f
+                ).ToListAsync();
 
                 response.Participants = fighters
                     .Select(f => new FightersDTO

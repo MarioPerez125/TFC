@@ -9,6 +9,6 @@ namespace TFC.AppEventos.Application.DTO.Responses
 {
     public class GetTournamentResponse : BaseResponse
     {
-        public List<TournamentDto>? Tournament { get; set; }
+        public List<TournamentDto>? Tournament { get; set; } = new List<TournamentDto>();
     }
 }

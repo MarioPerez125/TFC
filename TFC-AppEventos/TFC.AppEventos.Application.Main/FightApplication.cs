@@ -37,13 +37,32 @@ namespace TFC.AppEventos.Application.Main
             }
         }
 
+        public async Task<GetMyFightsResponse> GetMyFights(int userId)
+        {
+            GetMyFightsResponse response = new GetMyFightsResponse();
+            try
+            {
+                if (userId <= 0)
+                {
+                    throw new Exception("El ID del luchador no puede ser menor o igual a cero");
+                }
+                return await _fightRepository.GetMyFights(userId);
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+                response.Message = $"Error al obtener los combates: {ex.Message}";
+                return response;
+            }
+        }
+
         public async Task<OrganizarPeleaResponse> ScheduleFight(FightDto fightDto)
         {
             OrganizarPeleaResponse response = new OrganizarPeleaResponse();
             try
             {
-                if (fightDto == null )
-                    {
+                if (fightDto == null)
+                {
                     throw new Exception("Los datos de la pelea no pueden ser nulos");
 
                 }

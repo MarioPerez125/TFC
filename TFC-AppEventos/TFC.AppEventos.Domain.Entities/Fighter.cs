@@ -7,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace TFC.AppEventos.Domain.Entities
 {
-    public class Fighters
+    public class Fighter
     {
-        [Key]
         public int FighterId { get; set; }
         public string WeightClass { get; set; }
         public int Height { get; set; } = 0; // Default value

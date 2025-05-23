@@ -13,7 +13,7 @@ namespace TFC.AppEventos.Application.DTO
         public int Fighter1Id { get; set; }
         public int Fighter2Id { get; set; }
         public DateTime? ScheduledTime { get; set; }
-        public string Status { get; set; }
+        public string? Status { get; set; }
         public int? WinnerId { get; set; }
     }
 }

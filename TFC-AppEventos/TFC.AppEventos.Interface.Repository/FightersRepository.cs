@@ -22,6 +22,50 @@ namespace TFC.AppEventos.Infraestructure.Repository
             _context = context;
         }
 
+        public async Task<GetFighterInfoResponse> GetFighterInfo(int userId)
+        {
+            GetFighterInfoResponse response = new GetFighterInfoResponse();
+            try
+            {
+                User? user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == userId);
+                Fighter? fighter = _context.Fighters.FirstOrDefault(f => f.UserId == userId);
+
+                if (user != null && fighter != null)
+                {
+                    response.FighterInfo.User = new UserDto
+                    {
+                        UserId = user.UserId,
+                        Username = user.Username,
+                        Email = user.Email,
+                        Role = user.Role
+                    };
+                    response.FighterInfo.Fighter = new FightersDTO
+                    {
+                        UserId = fighter.UserId,
+                        Wins = fighter.Wins,
+                        Losses = fighter.Losses,
+                        Draws = fighter.Draws,
+                        WeightClass = fighter.WeightClass,
+                        Height = fighter.Height,
+                        Reach = fighter.Reach
+                    };
+                    response.IsSuccess = true;
+                    response.Message = "Información del luchador obtenida correctamente";
+                }
+                else
+                {
+                    response.IsSuccess = false;
+                    response.Message = "Luchador no encontrado";
+                }
+            }
+            catch
+            {
+                response.IsSuccess = false;
+                response.Message = "Error al obtener la información del luchador";
+            }
+            return response;
+        }
+
         public async Task<GetMyTournamentsAsFighterResponse> GetMyTournamentsAsFighter(int userId)
         {
             GetMyTournamentsAsFighterResponse response = new GetMyTournamentsAsFighterResponse();
@@ -29,7 +73,7 @@ namespace TFC.AppEventos.Infraestructure.Repository
             try
             {
 
-                Fighters? fighter = _context.Fighters.FirstOrDefault(f => f.UserId == userId);
+                Fighter? fighter = _context.Fighters.FirstOrDefault(f => f.UserId == userId);
 
                 var tournamentIds = await _context.Fights
     .Where(f => f.Fighter1Id == fighter.FighterId || f.Fighter2Id == fighter.FighterId)
@@ -63,7 +107,7 @@ namespace TFC.AppEventos.Infraestructure.Repository
                 return response;
             }
         }
-        
+
         public async Task<RegisterFighterResponse> RegisterFighter(FightersDTO fighterDto)
         {
             RegisterFighterResponse response = new RegisterFighterResponse();
@@ -73,7 +117,7 @@ namespace TFC.AppEventos.Infraestructure.Repository
             if (user != null)
             {
                 user.Role = Roles.Fighter.ToString();
-                Fighters fighter = new Fighters
+                Fighter fighter = new Fighter
                 {
                     UserId = fighterDto.UserId,
                     Wins = fighterDto.Wins,
@@ -102,7 +146,7 @@ namespace TFC.AppEventos.Infraestructure.Repository
 
         public async Task<bool> UnregisterFighter(int id)
         {
-            Fighters? fighter = await _context.Fighters.FirstOrDefaultAsync(f => f.UserId == id);
+            Fighter? fighter = await _context.Fighters.FirstOrDefaultAsync(f => f.UserId == id);
             if (fighter != null)
             {
                 _context.Fighters.Remove(fighter);

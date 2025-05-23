@@ -9,7 +9,7 @@ namespace TFC.AppEventos.Application.DTO.Responses
 {
     public class GetAllParticipantsResponse : BaseResponse
     {
-        public IEnumerable<FightersDTO>? Participants { get; set; }
+        public IEnumerable<FightersDTO>? Participants { get; set; } = new List<FightersDTO>();
     }
     
 }

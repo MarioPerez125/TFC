@@ -63,6 +63,44 @@ namespace TFC.AppEventos.Infraestructure.Repository
             return response;
         }
 
+        public async Task<GetMyFightsResponse> GetMyFights(int userId)
+        {
+            GetMyFightsResponse response = new GetMyFightsResponse();
+            try
+            {
+                Fighter? fighter = await _context.Fighters.FirstOrDefaultAsync(f => f.UserId == userId);
+                if (fighter == null)
+                {
+                    throw new Exception("Fighter not found.");
+                }
+                List<Fight> fights = await _context.Fights
+                    .Where(f => f.Fighter1Id == fighter.FighterId || f.Fighter2Id == fighter.FighterId)
+                    .ToListAsync();
+
+                fights.ForEach(f =>
+                {
+                    response.Fights.Add(new FightDto
+                    {
+                        FightId = f.FightId,
+                        Fighter1Id = f.Fighter1Id,
+                        Fighter2Id = f.Fighter2Id,
+                        ScheduledTime = f.ScheduledTime,
+                        TournamentId = f.TournamentId,
+                        Status = f.Status,
+                        WinnerId = f.WinnerId
+                    });
+                });
+                response.IsSuccess = true;
+                response.Message = "Fights retrieved successfully.";
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+                response.Message = "Error retrieving fights: " + ex.Message;
+            }
+            return response;
+        }
+
         public async Task<OrganizarPeleaResponse> ScheduleFight(FightDto fightDto)
         {
             OrganizarPeleaResponse response = new OrganizarPeleaResponse();
@@ -113,11 +151,11 @@ namespace TFC.AppEventos.Infraestructure.Repository
                     Method = resultDto.Method
 
                 };
-                Fighters? fighter = await _context.Fighters.FirstOrDefaultAsync(f => f.FighterId == resultDto.WinnerId);
+                Fighter? fighter = await _context.Fighters.FirstOrDefaultAsync(f => f.FighterId == resultDto.WinnerId);
                 fighter.Wins += 1;
                 await _context.SaveChangesAsync();
 
-                Fighters? loserFighter = await _context.Fighters.FirstOrDefaultAsync(f => f.FighterId == resultDto.LooserId);
+                Fighter? loserFighter = await _context.Fighters.FirstOrDefaultAsync(f => f.FighterId == resultDto.LooserId);
                 loserFighter.Losses += 1;
                 await _context.SaveChangesAsync();
 

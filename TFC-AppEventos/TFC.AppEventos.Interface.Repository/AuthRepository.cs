@@ -97,7 +97,13 @@ namespace TFC.AppEventos.Infraestructure.Repository.AuthRepository
                 Username = authDto.Username,
                 Password = PasswordUtils.PasswordEncoder(authDto.Password),
                 Email = authDto.Email,
-                Role = Roles.Organizer.ToString()
+                Role = Roles.Organizer.ToString(),
+                Name = authDto.Name,
+                LastName = authDto.LastName,
+                Phone = authDto.Phone,
+                Country = authDto.Country,
+                City = authDto.City,
+
             };
 
             User? user2 = await _context.Users
