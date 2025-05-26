@@ -57,7 +57,34 @@ Future<UserDto?> loginWithEmail(String email, String password, String username) 
     }
     return null;
   }
-
+// ...existing code...
+Future<bool> register({
+  required String name,
+  required String lastName,
+  required String email,
+  required String password,
+  required String username,
+}) async {
+  final authDto = AuthDto(
+    name: int.tryParse(name),
+    lastName: int.tryParse(lastName),
+    phone: null,
+    birthDate: null,
+    city: null,
+    country: null,
+    username: username,
+    email: email,
+    password: password,
+    role: null,
+  );
+  final response = await _apiClient.post(
+    Endpoints.register,
+    body: {'authDto': authDto.toJson()},
+    requiresAuth: false,
+  );
+  return response.statusCode == 200 || response.statusCode == 201;
+}
+// ...existing code...
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('auth_data');

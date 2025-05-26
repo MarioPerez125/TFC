@@ -1,66 +1,47 @@
+import 'package:app_eventos/core/auth/auth_service.dart';
+import 'package:app_eventos/features/auth/screens/login_screen.dart';
+import 'package:app_eventos/features/auth/screens/main_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import '../../core/auth/auth_provider.dart';
 
-class MainScreen extends StatefulWidget {
-  const MainScreen({Key? key}) : super(key: key);
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Verificar el estado de autenticación antes de iniciar la app
+  final storage = FlutterSecureStorage();
+  final token = await storage.read(key: 'jwt_token');
+  final isLoggedIn = token != null;
 
-  @override
-  _MainScreenState createState() => _MainScreenState();
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => AuthProvider(AuthService()),
+        ),
+      ],
+      child: MyApp(isLoggedIn: isLoggedIn),
+    ),
+  );
 }
 
-class _MainScreenState extends State<MainScreen> {
-  int _currentIndex = 0;
+class MyApp extends StatelessWidget {
+  final bool isLoggedIn;
 
-  // ...existing code...
-  final List<Widget> _screens = [
-    const Center(child: Text('Torneos')),     // 1
-    const Center(child: Text('Calendario')),  // 2
-    const Center(child: Text('Noticias')),    // 3
-    const Center(child: Text('Perfil')),      // 4
-  ];
-// ...existing code...
+  const MyApp({super.key, required this.isLoggedIn});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Fans de Deportes de Contacto'),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () async {
-              await Provider.of<AuthProvider>(context, listen: false).logout();
-              Navigator.pushReplacementNamed(context, '/login');
-            },
-          ),
-        ],
-      ),
-      body: _screens[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: (index) => setState(() => _currentIndex = index),
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.sports_mma),
-            label: 'Torneos',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.calendar_today),
-            label: 'Calendario',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.new_releases),
-            label: 'Noticias',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Perfil',
-          ),
-        ],
-      ),
+    return MaterialApp(
+      title: 'Fans de Deportes de Contacto',
+      // Mostrar MainScreen si está logueado, LoginScreen si no
+      home: isLoggedIn ? const MainScreen() : const LoginScreen(),
+      routes: {
+        '/login': (context) => const LoginScreen(),
+        '/main': (context) => const MainScreen(),
+      },
     );
   }
 }

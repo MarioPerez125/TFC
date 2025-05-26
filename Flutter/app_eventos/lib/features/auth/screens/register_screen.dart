@@ -1,6 +1,8 @@
+import 'package:app_eventos/core/auth/auth_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
+import 'package:provider/provider.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
@@ -15,6 +17,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _passwordController = TextEditingController();
   final _nameController = TextEditingController();
   final _lastNameController = TextEditingController();
+  final _usernameController = TextEditingController();
   bool _isLoading = false;
 
   @override
@@ -23,6 +26,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     _passwordController.dispose();
     _nameController.dispose();
     _lastNameController.dispose();
+    _usernameController.dispose();
     super.dispose();
   }
 
@@ -30,12 +34,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
-    
+
     try {
-      // Aquí iría la lógica de registro con tu AuthProvider
-      // await Provider.of<AuthProvider>(context, listen: false).register(...);
-      
-      if (mounted) {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final success = await authProvider.register(
+        _nameController.text.trim(),
+        _lastNameController.text.trim(),
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+        _usernameController.text.trim(),
+      );
+
+      if (success && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Registro exitoso!')),
         );
@@ -86,6 +96,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Por favor ingresa tu apellido';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 20),
+              TextFormField(
+                controller: _usernameController,
+                decoration: const InputDecoration(
+                  labelText: 'Username',
+                  prefixIcon: Icon(Icons.account_circle),
+                ),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor ingresa tu usuario';
                   }
                   return null;
                 },
