@@ -30,6 +30,7 @@ namespace TFC.AppEventos.Infraestructure.Repository
                 Tournament tournament = new Tournament();
                 tournament.Name = tournamentDto.location;
                 tournament.StartDate = tournamentDto.StartDate;
+                tournament.Arena = tournamentDto.Arena; // Assuming Arena is part of the TournamentDto
                 tournament.EndDate = tournamentDto.EndDate;
                 tournament.SportType = tournamentDto.SportType;
                 tournament.OrganizerId = organizerId;
@@ -43,6 +44,7 @@ namespace TFC.AppEventos.Infraestructure.Repository
                 {
                     TournamentId = tournament.TournamentId,
                     location = tournament.Name,
+                    Arena = tournament.Arena, // Assuming Arena is part of the TournamentDto
                     StartDate = tournament.StartDate,
                     EndDate = tournament.EndDate,
                     SportType = tournament.SportType,
@@ -57,6 +59,24 @@ namespace TFC.AppEventos.Infraestructure.Repository
                 response.Message = $"Error al crear el torneo: {ex.Message}";
                 return response;
             }
+        }
+
+        public async Task<List<TournamentDto>?> GetAllTournaments()
+        {
+            List<TournamentDto>? tournaments = new List<TournamentDto>();
+            tournaments = await _context.Tournaments
+                .Select(t => new TournamentDto
+                {
+                    TournamentId = t.TournamentId,
+                    location = t.Name,
+                    Arena = t.Arena,
+                    StartDate = t.StartDate,
+                    EndDate = t.EndDate,
+                    SportType = t.SportType,
+                    OrganizerId = t.OrganizerId
+                })
+                .ToListAsync();
+            return tournaments;
         }
 
         public async Task<GetAllParticipantsResponse> GetParticipants(int tournamentId)
@@ -124,6 +144,7 @@ namespace TFC.AppEventos.Infraestructure.Repository
                     {
                         TournamentId = item.TournamentId,
                         location = item.Name,
+                        Arena = item.Arena, // Assuming Arena is part of the TournamentDto
                         StartDate = item.StartDate,
                         EndDate = item.EndDate,
                         SportType = item.SportType,

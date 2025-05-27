@@ -6,7 +6,7 @@ namespace TFC.AppEventos.Infraestructure.Interface.IAuthRepository
     public interface IAuthRepository
     {
         Task<LoginResponse> Login(AuthDto authDto);
-        Task<RegisterResponse> Register(AuthDto authDto);
-        Task<RegisterResponse> RegisterAsOrganizer(AuthDto authDto);
+        Task<RegisterResponse> Register(RegisterDTO registerDTO);
+        Task<RegisterResponse> RegisterAsOrganizer(RegisterDTO registerDTO);
     }
 }

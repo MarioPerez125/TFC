@@ -27,13 +27,13 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
         /// Registra un nuevo usuario
         /// </summary>
         [HttpPost("register")]
-        public async Task<ActionResult<AuthDto>> Register([FromBody] AuthDto authDto)
+        public async Task<ActionResult<RegisterDTO>> Register([FromBody] RegisterDTO registerDTO)
         {
-            var response = await _authApplication.Register(authDto);
+            var response = await _authApplication.Register(registerDTO);
 
             if (response.IsSuccess)
             {
-                return Ok(response.AuthDto);
+                return Ok(response.RegisterDTO);
             }
             else
             {
@@ -76,13 +76,13 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
         }
 
         [HttpPost("register-as-organizer")]
-        public async Task<ActionResult<AuthDto>> RegisterAsOrganizer([FromBody] AuthDto authDto)
+        public async Task<ActionResult<AuthDto>> RegisterAsOrganizer([FromBody] RegisterDTO registerDTO)
         {
-            RegisterResponse response = await _authApplication.RegisterAsOrganizer(authDto);
+            RegisterResponse response = await _authApplication.RegisterAsOrganizer(registerDTO);
 
             if (response.IsSuccess)
             {
-                return Ok(response.AuthDto);
+                return Ok(response.RegisterDTO);
             }
             else
             {

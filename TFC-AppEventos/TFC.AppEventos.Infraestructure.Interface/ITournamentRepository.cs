@@ -11,6 +11,7 @@ namespace TFC.AppEventos.Infraestructure.Interface
     public interface ITournamentRepository
     {
         Task<CreateTournamentResponse> CreateTournament(TournamentDto tournamentDto, int organizerId);
+        Task<List<TournamentDto>?> GetAllTournaments();
         Task<GetAllParticipantsResponse> GetParticipants(int tournamentId);
         Task<GetTournamentResponse> GetTournamentByName(string name);
     }

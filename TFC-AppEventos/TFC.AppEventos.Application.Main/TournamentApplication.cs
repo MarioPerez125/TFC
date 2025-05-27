@@ -56,6 +56,11 @@ namespace TFC.AppEventos.Application.Main
             }
         }
 
+        public async Task<List<TournamentDto>?> GetAllTournaments()
+        {
+            return await _tournamentRepository.GetAllTournaments();
+        }
+
         public async Task<GetAllParticipantsResponse> GetParticipants(int tournamentId)
         {
             GetAllParticipantsResponse response = new GetAllParticipantsResponse();

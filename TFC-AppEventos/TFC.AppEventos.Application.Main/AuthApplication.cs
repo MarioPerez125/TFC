@@ -55,51 +55,51 @@ namespace TFC.AppEventos.Application.Main
             }
         }
 
-        public async Task<RegisterResponse> Register(AuthDto authDto)
+        public async Task<RegisterResponse> Register(RegisterDTO registerDto)
         {
             var response = new RegisterResponse();
 
             try
             {
                 // Validaciones básicas
-                if (authDto == null)
+                if (registerDto == null)
                 {
                     response.ResponseCode = ResponseCodes.ERROR_USER_NOTFOUND;
                     throw new Exception("Los datos de autenticación no pueden ser nulos");
                 }
 
-                if (string.IsNullOrWhiteSpace(authDto.Username))
+                if (string.IsNullOrWhiteSpace(registerDto.Username))
                 {
                     response.ResponseCode = ResponseCodes.ERROR_USER_NOTFOUND;
                     throw new Exception("El nombre de usuario es requerido");
                 }
 
-                if (string.IsNullOrWhiteSpace(authDto.Password))
+                if (string.IsNullOrWhiteSpace(registerDto.Password))
                 {
                     response.ResponseCode = ResponseCodes.ERROR_BAD_PASSWORD;
                     throw new Exception("La contraseña es requerida");
                 }
 
-                if (authDto.Password.Length < 6)
+                if (registerDto.Password.Length < 6)
                 {
                     response.ResponseCode = ResponseCodes.ERROR_BAD_PASSWORD;
                     throw new Exception("La contraseña debe tener al menos 6 caracteres");
                 }
 
-                if (string.IsNullOrWhiteSpace(authDto.Email))
+                if (string.IsNullOrWhiteSpace(registerDto.Email))
                 {
                     response.ResponseCode = ResponseCodes.ERROR_BAD_EMAIL;
                     throw new Exception("El email es requerido");
                 }
 
                 // Validación simple de email
-                if (!authDto.Email.Contains("@"))
+                if (!registerDto.Email.Contains("@"))
                 {
                     response.ResponseCode = ResponseCodes.ERROR_BAD_EMAIL;
                     throw new Exception("El email no es válido");
                 }
                 // Llamada al repositorio
-                return await _authRepository.Register(authDto);
+                return await _authRepository.Register(registerDto);
 
             }
             catch (Exception ex)
@@ -110,50 +110,50 @@ namespace TFC.AppEventos.Application.Main
             }
         }
 
-        public async Task<RegisterResponse> RegisterAsOrganizer(AuthDto authDto)
+        public async Task<RegisterResponse> RegisterAsOrganizer(RegisterDTO registerDTO)
         {
             RegisterResponse response = new RegisterResponse();
             try
             {
                 // Validaciones básicas
-                if (authDto == null)
+                if (registerDTO == null)
                 {
                     response.ResponseCode = ResponseCodes.ERROR_USER_NOTFOUND;
                     throw new Exception("Los datos de autenticación no pueden ser nulos");
                 }
 
-                if (string.IsNullOrWhiteSpace(authDto.Username))
+                if (string.IsNullOrWhiteSpace(registerDTO.Username))
                 {
                     response.ResponseCode = ResponseCodes.ERROR_USER_NOTFOUND;
                     throw new Exception("El nombre de usuario es requerido");
                 }
 
-                if (string.IsNullOrWhiteSpace(authDto.Password))
+                if (string.IsNullOrWhiteSpace(registerDTO.Password))
                 {
                     response.ResponseCode = ResponseCodes.ERROR_BAD_PASSWORD;
                     throw new Exception("La contraseña es requerida");
                 }
 
-                if (authDto.Password.Length < 6)
+                if (registerDTO.Password.Length < 6)
                 {
                     response.ResponseCode = ResponseCodes.ERROR_BAD_PASSWORD;
                     throw new Exception("La contraseña debe tener al menos 6 caracteres");
                 }
 
-                if (string.IsNullOrWhiteSpace(authDto.Email))
+                if (string.IsNullOrWhiteSpace(registerDTO.Email))
                 {
                     response.ResponseCode = ResponseCodes.ERROR_BAD_EMAIL;
                     throw new Exception("El email es requerido");
                 }
 
                 // Validación simple de email
-                if (!authDto.Email.Contains("@"))
+                if (!registerDTO.Email.Contains("@"))
                 {
                     response.ResponseCode = ResponseCodes.ERROR_BAD_EMAIL;
                     throw new Exception("El email no es válido");
                 }
                 // Llamada al repositorio
-                return await _authRepository.RegisterAsOrganizer(authDto);
+                return await _authRepository.RegisterAsOrganizer(registerDTO);
             }
             catch (Exception ex)
             {

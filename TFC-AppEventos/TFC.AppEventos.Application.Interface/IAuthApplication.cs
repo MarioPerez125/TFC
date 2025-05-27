@@ -6,7 +6,7 @@ namespace TFC.AppEventos.Application.Main
     public interface IAuthApplication
     {
         Task<LoginResponse> Login(AuthDto authDto);
-        Task<RegisterResponse> Register(AuthDto authDto);
-        Task<RegisterResponse> RegisterAsOrganizer(AuthDto authDto);
+        Task<RegisterResponse> Register(RegisterDTO authDto);
+        Task<RegisterResponse> RegisterAsOrganizer(RegisterDTO authDto);
     }
 }

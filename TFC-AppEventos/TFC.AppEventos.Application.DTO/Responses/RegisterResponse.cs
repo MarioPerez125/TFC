@@ -9,6 +9,6 @@ namespace TFC.AppEventos.Application.DTO.Responses
 {
     public class RegisterResponse : BaseResponse
     {
-        public AuthDto AuthDto { get; set; }
+        public RegisterDTO RegisterDTO { get; set; }
     }
 }

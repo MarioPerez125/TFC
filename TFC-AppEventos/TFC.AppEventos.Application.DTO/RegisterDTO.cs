@@ -1,10 +1,10 @@
-﻿using TFC.AppEventos.Domain.Entities.Enum;
+﻿using System.ComponentModel.DataAnnotations;
 
-namespace TFC.AppEventos.Domain.Entities
+namespace TFC.AppEventos.Application.DTO
 {
-    public class User
+    public class RegisterDTO
     {
-        public int? UserId { get; set; }
+
         public string Name { get; set; }
         public string LastName { get; set; }
         public int? Phone { get; set; }
@@ -12,11 +12,9 @@ namespace TFC.AppEventos.Domain.Entities
         public string? City { get; set; }
         public string? Country { get; set; }
         public string Username { get; set; }
+        [EmailAddress]
         public string Email { get; set; }
         public string Password { get; set; }
-        public string? Role { get; set; } = Roles.User.ToString();
-
-        // Relaciones
+        public string? Role { get; set; }
     }
 }
-

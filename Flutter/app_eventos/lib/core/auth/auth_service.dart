@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:app_eventos/core/models/dto/fighter_dto.dart';
+import 'package:app_eventos/core/models/dto/register_dto.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../api/api_client.dart';
@@ -11,25 +13,20 @@ class AuthService {
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
   final ApiClient _apiClient = ApiClient();
 
-Future<UserDto?> loginWithEmail(String email, String password, String username) async {
-  final authDto = AuthDto(
-    name: null,
-    lastName: null,
-    phone: null,
-    birthDate: null,
-    city: null,
-    country: null,
-    username: username,
-    email: email,
-    password: password,
-    role: null,
-  );
+  Future<UserDto?> loginWithEmail(String email, String password, String username) async {
+  print('POST a: ${Endpoints.login}');
+  print('Body: {"username": $username, "password": $password}');
   final response = await _apiClient.post(
     Endpoints.login,
-    body: {'authDto': authDto.toJson()},
+    body: {
+      'username': username,
+      'password': password,
+    },
+    requiresAuth: false,
   );
-
-  if (response.data != null) {
+  print('Respuesta: ${response.statusCode} ${response.data} ${response.error}');
+  if (response.data != null && response.statusCode == 200) {
+    // Aquí parseas toda la respuesta como LoginResponse
     final loginResponse = LoginResponse.fromJson(response.data);
     await _saveAuthData(loginResponse);
     return loginResponse.user;
@@ -57,34 +54,43 @@ Future<UserDto?> loginWithEmail(String email, String password, String username) 
     }
     return null;
   }
-// ...existing code...
-Future<bool> register({
+
+  Future<bool> register({
   required String name,
   required String lastName,
   required String email,
   required String password,
   required String username,
+  int? phone,
+  String? birthDate,
+  String? city,
+  String? country,
 }) async {
-  final authDto = AuthDto(
-    name: int.tryParse(name),
-    lastName: int.tryParse(lastName),
-    phone: null,
-    birthDate: null,
-    city: null,
-    country: null,
-    username: username,
+  final registerDto = RegisterDto(
+    name: name,
+    lastName: lastName,
     email: email,
     password: password,
-    role: null,
+    username: username,
+    phone: phone,
+    birthDate: birthDate,
+    city: city,
+    country: country,
   );
+  final body = {
+    "registerDTO": registerDto.toJson(),
+  };
+  print('Body enviado: $body');
   final response = await _apiClient.post(
     Endpoints.register,
-    body: {'authDto': authDto.toJson()},
+    body: body,
     requiresAuth: false,
   );
+  print('Status: ${response.statusCode}');
+  print('Respuesta backend: ${response.data}');
   return response.statusCode == 200 || response.statusCode == 201;
 }
-// ...existing code...
+
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('auth_data');
@@ -95,4 +101,22 @@ Future<bool> register({
     final token = await _secureStorage.read(key: 'jwt_token');
     return token != null;
   }
+
+Future<bool> registerAsOrganizer(AuthDto authDto) async {
+  final response = await _apiClient.post(
+    '/auth/register-as-organizer',
+    body: authDto.toJson(),
+    requiresAuth: true,
+  );
+  return response.statusCode == 200;
+}
+
+Future<bool> registerAsFighter(FighterDto fighterDto) async {
+  final response = await _apiClient.post(
+    '/fighters/register-as-fighter',
+    body: fighterDto.toJson(),
+    requiresAuth: true,
+  );
+  return response.statusCode == 200;
+}
 }

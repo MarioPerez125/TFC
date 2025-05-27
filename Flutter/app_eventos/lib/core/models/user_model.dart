@@ -2,14 +2,14 @@ import 'package:app_eventos/core/models/dto/user_dto.dart';
 
 class User {
   final int? userId;
-  final String name;
-  final String lastName;
+  final String? name;
+  final String? lastName;
   final String? phone;
   final DateTime? birthDate;
   final String? city;
   final String? country;
-  final String username;
-  final String email;
+  final String? username;
+  final String? email;
   final String? password;
   final String? role;
 

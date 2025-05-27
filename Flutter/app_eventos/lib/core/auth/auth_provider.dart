@@ -1,8 +1,4 @@
-import 'package:app_eventos/core/api/endpoints.dart';
-import 'package:app_eventos/core/models/dto/auth_dto.dart';
 import 'package:flutter/foundation.dart';
-import 'package:http/http.dart' as _apiClient;
-
 import '../models/user_model.dart';
 import 'auth_service.dart';
 
@@ -15,8 +11,6 @@ class AuthProvider with ChangeNotifier {
 
   User? get user => _user;
   bool get isLoading => _isLoading;
-
-// ...existing code...
 
   Future<void> initialize() async {
     final userDto = await _authService.getCurrentUser();
@@ -38,38 +32,44 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  // ...existing code...
-// ...existing code...
   Future<bool> register(
-  String name,
-  String lastName,
-  String email,
-  String password,
-  String username,
-) async {
-  _isLoading = true;
-  notifyListeners();
-  try {
-    final result = await _authService.register(
-      name: name,
-      lastName: lastName,
-      email: email,
-      password: password,
-      username: username,
-    );
-    return result;
-  } finally {
-    _isLoading = false;
+    String name,
+    String lastName,
+    String email,
+    String password,
+    String username, // <-- username va en 5to lugar
+    {int? phone, String? birthDate, String? city, String? country}
+  ) async {
+    _isLoading = true;
     notifyListeners();
+    try {
+      final result = await _authService.register(
+        name: name,
+        lastName: lastName,
+        email: email,
+        password: password,
+        username: username,
+        phone: phone,
+        birthDate: birthDate,
+        city: city,
+        country: country,
+      );
+      return result;
+    } finally {
+      _isLoading = false;
+      notifyListeners();
+    }
   }
-}
-// ...existing code...
-// ...existing code...
-  
 
   Future<void> logout() async {
     await _authService.logout();
     _user = null;
+    notifyListeners();
+  }
+
+  Future<void> refreshUser() async {
+    final userDto = await _authService.getCurrentUser();
+    _user = userDto != null ? User.fromDto(userDto) : null;
     notifyListeners();
   }
 }

@@ -21,11 +21,11 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
         /// <summary>
         /// Obtiene todos los torneos
         /// </summary>
-        //[HttpGet]
-        //public async Task<ActionResult<IEnumerable<TournamentDto>>> GetAll()
-        //{
-
-        //}
+        [HttpGet]
+        public async Task<ActionResult<List<TournamentDto>>> GetAll()
+        {
+            return Ok(await _tournamentsApplication.GetAllTournaments()); // Assuming GetTournamentByName can handle empty name to return all tournaments
+        }
 
         /// <summary>
         /// Obtiene un torneo específico por ID

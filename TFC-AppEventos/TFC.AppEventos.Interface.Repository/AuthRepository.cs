@@ -19,6 +19,7 @@ namespace TFC.AppEventos.Infraestructure.Repository.AuthRepository
         public async Task<LoginResponse?> Login(AuthDto authDto)
         {
             LoginResponse response = new LoginResponse();
+            response.AuthDto = authDto;
 
             User? user = await _context.Users
                 .FirstOrDefaultAsync(u => u.Username == authDto.Username && u.Password == PasswordUtils.PasswordEncoder(authDto.Password));
@@ -35,7 +36,6 @@ namespace TFC.AppEventos.Infraestructure.Repository.AuthRepository
                 };
                 response.IsSuccess = true;
                 response.Message = "Usuario autenticado correctamente";
-                response.AuthDto = authDto;
                 return response;
             }
             else
@@ -46,19 +46,19 @@ namespace TFC.AppEventos.Infraestructure.Repository.AuthRepository
             }
         }
 
-        public async Task<RegisterResponse> Register(AuthDto authDto)
+        public async Task<RegisterResponse> Register(RegisterDTO registerDTO)
         {
             RegisterResponse response = new RegisterResponse();
 
             User user = new User
             {
-                Username = authDto.Username,
-                Password = PasswordUtils.PasswordEncoder(authDto.Password),
-                Email = authDto.Email,
+                Username = registerDTO.Username,
+                Password = PasswordUtils.PasswordEncoder(registerDTO.Password),
+                Email = registerDTO.Email,
             };
 
             User? user2 = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == authDto.Email && u.Password == authDto.Password && u.Username == authDto.Username);
+                .FirstOrDefaultAsync(u => u.Email == registerDTO.Email && u.Password == registerDTO.Password && u.Username == registerDTO.Username);
             try
             {
                 if (user != null)
@@ -68,7 +68,7 @@ namespace TFC.AppEventos.Infraestructure.Repository.AuthRepository
 
                     response.IsSuccess = true;
                     response.Message = "Usuario registrado correctamente";
-                    response.AuthDto = authDto;
+                    response.RegisterDTO = registerDTO;
                     return response;
 
                 }
@@ -88,26 +88,28 @@ namespace TFC.AppEventos.Infraestructure.Repository.AuthRepository
             }
         }
 
-        public async Task<RegisterResponse> RegisterAsOrganizer(AuthDto authDto)
+        public async Task<RegisterResponse> RegisterAsOrganizer(RegisterDTO registerDTO)
         {
             RegisterResponse response = new RegisterResponse();
 
             User user = new User
             {
-                Username = authDto.Username,
-                Password = PasswordUtils.PasswordEncoder(authDto.Password),
-                Email = authDto.Email,
+                Username = registerDTO.Username,
+                Password = PasswordUtils.PasswordEncoder(registerDTO.Password),
+                Email = registerDTO.Email,
                 Role = Roles.Organizer.ToString(),
-                Name = authDto.Name,
-                LastName = authDto.LastName,
-                Phone = authDto.Phone,
-                Country = authDto.Country,
-                City = authDto.City,
+                Name = registerDTO.Name,
+                LastName = registerDTO.LastName,
+                Phone = registerDTO.Phone,
+                BirthDate = registerDTO.BirthDate,
+                City = registerDTO.City,
+                Country = registerDTO.Country
+
 
             };
 
             User? user2 = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == authDto.Email && u.Password == authDto.Password && u.Username == authDto.Username);
+                .FirstOrDefaultAsync(u => u.Email == registerDTO.Email && u.Password == registerDTO.Password && u.Username == registerDTO.Username);
             try
             {
                 if (user != null)
@@ -117,7 +119,7 @@ namespace TFC.AppEventos.Infraestructure.Repository.AuthRepository
 
                     response.IsSuccess = true;
                     response.Message = "Usuario registrado correctamente";
-                    response.AuthDto = authDto;
+                    response.RegisterDTO = registerDTO;
                     return response;
 
                 }

@@ -1,21 +1,21 @@
 class UserDto {
   final int? userId;
-  final int? name;
-  final int? lastName;
-  final int? phone;
+  final String? name;
+  final String? lastName;
+  final int phone;
   final String? birthDate;
-  final int? city;
-  final int? country;
-  final String username;
-  final String email;
-  final String password;
+  final String? city;
+  final String? country;
+  final String? username;
+  final String? email;
+  final String? password;
   final String? role;
 
   UserDto({
     this.userId,
-    this.name,
-    this.lastName,
-    this.phone,
+    required this.name,
+    required this.lastName,
+    required this.phone,
     this.birthDate,
     this.city,
     this.country,

@@ -10,6 +10,7 @@ namespace TFC.AppEventos.Application.DTO
     {
         public int TournamentId { get; set; }
         public string location { get; set; }
+        public string Arena { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public string SportType { get; set; }
