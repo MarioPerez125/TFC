@@ -13,26 +13,29 @@ class AuthService {
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
   final ApiClient _apiClient = ApiClient();
 
-  Future<UserDto?> loginWithEmail(String email, String password, String username) async {
-  print('POST a: ${Endpoints.login}');
-  print('Body: {"username": $username, "password": $password}');
-  final response = await _apiClient.post(
-    Endpoints.login,
-    body: {
-      'username': username,
-      'password': password,
-    },
-    requiresAuth: false,
-  );
-  print('Respuesta: ${response.statusCode} ${response.data} ${response.error}');
-  if (response.data != null && response.statusCode == 200) {
-    // Aquí parseas toda la respuesta como LoginResponse
-    final loginResponse = LoginResponse.fromJson(response.data);
-    await _saveAuthData(loginResponse);
-    return loginResponse.user;
+  Future<UserDto?> loginWithEmail(
+    String email,
+    String password,
+    String username,
+  ) async {
+    print('POST a: ${Endpoints.login}');
+    print('Body: {"username": $username, "password": $password}');
+    final response = await _apiClient.post(
+      Endpoints.login,
+      body: {'username': username, 'password': password},
+      requiresAuth: false,
+    );
+    print(
+      'Respuesta: ${response.statusCode} ${response.data} ${response.error}',
+    );
+    if (response.data != null && response.statusCode == 200) {
+      // Aquí parseas toda la respuesta como LoginResponse
+      final loginResponse = LoginResponse.fromJson(response.data);
+      await _saveAuthData(loginResponse);
+      return loginResponse.user;
+    }
+    return null;
   }
-  return null;
-}
 
   Future<void> _saveAuthData(LoginResponse loginResponse) async {
     final prefs = await SharedPreferences.getInstance();
@@ -56,40 +59,38 @@ class AuthService {
   }
 
   Future<bool> register({
-  required String name,
-  required String lastName,
-  required String email,
-  required String password,
-  required String username,
-  int? phone,
-  String? birthDate,
-  String? city,
-  String? country,
-}) async {
-  final registerDto = RegisterDto(
-    name: name,
-    lastName: lastName,
-    email: email,
-    password: password,
-    username: username,
-    phone: phone,
-    birthDate: birthDate,
-    city: city,
-    country: country,
-  );
-  final body = {
-    "registerDTO": registerDto.toJson(),
-  };
-  print('Body enviado: $body');
-  final response = await _apiClient.post(
-    Endpoints.register,
-    body: body,
-    requiresAuth: false,
-  );
-  print('Status: ${response.statusCode}');
-  print('Respuesta backend: ${response.data}');
-  return response.statusCode == 200 || response.statusCode == 201;
-}
+    required String name,
+    required String lastName,
+    required String email,
+    required String password,
+    required String username,
+    int? phone,
+    String? birthDate,
+    String? city,
+    String? country,
+  }) async {
+    final registerDto = RegisterDto(
+      name: name,
+      lastName: lastName,
+      email: email,
+      password: password,
+      username: username,
+      phone: phone,
+      birthDate: birthDate,
+      city: city,
+      country: country,
+    );
+    final body = {"registerDTO": registerDto.toJson()};
+    print('Body enviado: $body');
+    final response = await _apiClient.post(
+      Endpoints.register,
+      body: body,
+      requiresAuth: false,
+    );
+    print('Status: ${response.statusCode}');
+    print('Respuesta backend: ${response.data}');
+    return response.statusCode == 200 || response.statusCode == 201;
+  }
 
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
@@ -102,21 +103,21 @@ class AuthService {
     return token != null;
   }
 
-Future<bool> registerAsOrganizer(AuthDto authDto) async {
-  final response = await _apiClient.post(
-    '/auth/register-as-organizer',
-    body: authDto.toJson(),
-    requiresAuth: true,
-  );
-  return response.statusCode == 200;
-}
+  Future<bool> registerAsOrganizer(AuthDto authDto) async {
+    final response = await _apiClient.post(
+      '/auth/register-as-organizer',
+      body: authDto.toJson(),
+      requiresAuth: true,
+    );
+    return response.statusCode == 200;
+  }
 
-Future<bool> registerAsFighter(FighterDto fighterDto) async {
-  final response = await _apiClient.post(
-    '/fighters/register-as-fighter',
-    body: fighterDto.toJson(),
-    requiresAuth: true,
-  );
-  return response.statusCode == 200;
-}
+  Future<bool> registerAsFighter(FighterDto fighterDto) async {
+    final response = await _apiClient.post(
+      '/fighters/register-as-fighter',
+      body: fighterDto.toJson(),
+      requiresAuth: true,
+    );
+    return response.statusCode == 200;
+  }
 }
