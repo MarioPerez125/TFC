@@ -36,7 +36,7 @@ class ApiClient {
         }
       }
       final response = await _dio.post(
-        endpoint,
+        endpoint, // aquí endpoint = '/auth/register'
         data: body,
         options: Options(headers: headers),
       );

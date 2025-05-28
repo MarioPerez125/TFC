@@ -29,7 +29,6 @@ class AuthService {
       'Respuesta: ${response.statusCode} ${response.data} ${response.error}',
     );
     if (response.data != null && response.statusCode == 200) {
-      // Aquí parseas toda la respuesta como LoginResponse
       final loginResponse = LoginResponse.fromJson(response.data);
       await _saveAuthData(loginResponse);
       return loginResponse.user;
@@ -58,7 +57,7 @@ class AuthService {
     return null;
   }
 
-  Future<bool> register({
+  Future<RegisterDto?> register({
     required String name,
     required String lastName,
     required String email,
@@ -80,16 +79,19 @@ class AuthService {
       city: city,
       country: country,
     );
-    final body = {"registerDTO": registerDto.toJson()};
-    print('Body enviado: $body');
+    print('Body enviado: ${registerDto.toJson()}');
     final response = await _apiClient.post(
       Endpoints.register,
-      body: body,
+      body: registerDto.toJson(), // <-- Aquí va el mapa directamente
       requiresAuth: false,
     );
+    print('ruta: ${Endpoints.register}');
     print('Status: ${response.statusCode}');
     print('Respuesta backend: ${response.data}');
-    return response.statusCode == 200 || response.statusCode == 201;
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return RegisterDto.fromJson(response.data);
+    }
+    return null;
   }
 
   Future<void> logout() async {
@@ -105,7 +107,7 @@ class AuthService {
 
   Future<bool> registerAsOrganizer(AuthDto authDto) async {
     final response = await _apiClient.post(
-      '/auth/register-as-organizer',
+      Endpoints.registerAsOrganizer,
       body: authDto.toJson(),
       requiresAuth: true,
     );

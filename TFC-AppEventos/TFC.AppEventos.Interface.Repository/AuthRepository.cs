@@ -19,31 +19,38 @@ namespace TFC.AppEventos.Infraestructure.Repository.AuthRepository
         public async Task<LoginResponse?> Login(AuthDto authDto)
         {
             LoginResponse response = new LoginResponse();
-            response.AuthDto = authDto;
-
-            User? user = await _context.Users
-                .FirstOrDefaultAsync(u => u.Username == authDto.Username && u.Password == PasswordUtils.PasswordEncoder(authDto.Password));
-
-
-            if (user != null)
+            try
             {
-                response.User = new UserDto
+                response.AuthDto = authDto;
+
+                User? user = await _context.Users
+                    .FirstOrDefaultAsync(u => u.Username == authDto.Username && u.Password == PasswordUtils.PasswordEncoder(authDto.Password));
+
+
+                if (user != null)
                 {
-                    UserId = user.UserId,
-                    Username = user.Username,
-                    Email = user.Email,
-                    Role = user.Role
-                };
-                response.IsSuccess = true;
-                response.Message = "Usuario autenticado correctamente";
-                return response;
+                    response.User = new UserDto
+                    {
+                        UserId = user.UserId,
+                        Username = user.Username,
+                        Email = user.Email,
+                        Role = user.Role
+                    };
+                    response.IsSuccess = true;
+                    response.Message = "Usuario autenticado correctamente";
+                    return response;
+                }
+                else
+                {
+                    throw new Exception("Usuario o contraseña incorrectos");
+                }
             }
-            else
+            catch(Exception ex)
             {
                 response.IsSuccess = false;
                 response.Message = "Usuario o contraseña incorrectos";
-                return response;
             }
+                return response;
         }
 
         public async Task<RegisterResponse> Register(RegisterDTO registerDTO)
@@ -55,6 +62,13 @@ namespace TFC.AppEventos.Infraestructure.Repository.AuthRepository
                 Username = registerDTO.Username,
                 Password = PasswordUtils.PasswordEncoder(registerDTO.Password),
                 Email = registerDTO.Email,
+                Name = registerDTO.Name,
+                LastName = registerDTO.LastName,
+                Phone = registerDTO.Phone,
+                BirthDate = registerDTO.BirthDate,
+                City = registerDTO.City,
+                Country = registerDTO.Country,
+
             };
 
             User? user2 = await _context.Users
@@ -88,28 +102,29 @@ namespace TFC.AppEventos.Infraestructure.Repository.AuthRepository
             }
         }
 
-        public async Task<RegisterResponse> RegisterAsOrganizer(RegisterDTO registerDTO)
+        public async Task<RegisterResponse> RegisterAsOrganizer(AuthDto authDto)
         {
             RegisterResponse response = new RegisterResponse();
 
-            User user = new User
+            
+
+            User? user = await _context.Users
+                .FirstOrDefaultAsync(u => u.Username == authDto.Username && u.Password == PasswordUtils.PasswordEncoder(authDto.Password));
+            user.Role = Roles.Organizer.ToString();
+
+            response.RegisterDTO = new RegisterDTO
             {
-                Username = registerDTO.Username,
-                Password = PasswordUtils.PasswordEncoder(registerDTO.Password),
-                Email = registerDTO.Email,
-                Role = Roles.Organizer.ToString(),
-                Name = registerDTO.Name,
-                LastName = registerDTO.LastName,
-                Phone = registerDTO.Phone,
-                BirthDate = registerDTO.BirthDate,
-                City = registerDTO.City,
-                Country = registerDTO.Country
-
-
+                Username = user.Username,
+                Password = user.Password,
+                Email = user.Email,
+                Name = user.Name,
+                LastName = user.LastName,
+                Phone = user.Phone,
+                BirthDate = user.BirthDate,
+                City = user.City,
+                Country = user.Country
             };
 
-            User? user2 = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == registerDTO.Email && u.Password == registerDTO.Password && u.Username == registerDTO.Username);
             try
             {
                 if (user != null)
@@ -119,15 +134,12 @@ namespace TFC.AppEventos.Infraestructure.Repository.AuthRepository
 
                     response.IsSuccess = true;
                     response.Message = "Usuario registrado correctamente";
-                    response.RegisterDTO = registerDTO;
                     return response;
 
                 }
                 else
                 {
-                    response.IsSuccess = false;
-                    response.Message = "Usuario ya existe";
-                    return response;
+                    throw new Exception("Usuario no existe");
                 }
 
             }

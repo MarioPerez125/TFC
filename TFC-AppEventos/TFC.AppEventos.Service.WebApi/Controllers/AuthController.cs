@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Kintech.WebServices.Transversal.Security.TFC.AppEventos.Transversal.Utils;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -49,6 +50,7 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
         {
             var loginResponse = await _authApplication.Login(authDto);
 
+            Console.WriteLine(PasswordUtils.PasswordDecoder("m8/Emcu1X2jiu0ozllvQzw=="));
             if (loginResponse.IsSuccess)
             {
                 // Generar token JWT
@@ -76,9 +78,9 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
         }
 
         [HttpPost("register-as-organizer")]
-        public async Task<ActionResult<AuthDto>> RegisterAsOrganizer([FromBody] RegisterDTO registerDTO)
+        public async Task<ActionResult<AuthDto>> RegisterAsOrganizer([FromBody] AuthDto authDto)
         {
-            RegisterResponse response = await _authApplication.RegisterAsOrganizer(registerDTO);
+            RegisterResponse response = await _authApplication.RegisterAsOrganizer(authDto);
 
             if (response.IsSuccess)
             {

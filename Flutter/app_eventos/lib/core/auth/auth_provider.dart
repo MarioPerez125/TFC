@@ -1,3 +1,4 @@
+import 'package:app_eventos/core/models/dto/register_dto.dart';
 import 'package:flutter/foundation.dart';
 import '../models/user_model.dart';
 import 'auth_service.dart';
@@ -32,18 +33,21 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<bool> register(
+  Future<RegisterDto?> register(
     String name,
     String lastName,
     String email,
     String password,
-    String username, // <-- username va en 5to lugar
-    {int? phone, String? birthDate, String? city, String? country}
+    String username,
+    int phone,
+    String birthDate,
+    String city,
+    String country,
   ) async {
     _isLoading = true;
     notifyListeners();
     try {
-      final result = await _authService.register(
+      final registerDto = await _authService.register(
         name: name,
         lastName: lastName,
         email: email,
@@ -54,7 +58,7 @@ class AuthProvider with ChangeNotifier {
         city: city,
         country: country,
       );
-      return result;
+      return registerDto;
     } finally {
       _isLoading = false;
       notifyListeners();

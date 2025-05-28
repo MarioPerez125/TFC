@@ -7,6 +7,6 @@ namespace TFC.AppEventos.Application.Main
     {
         Task<LoginResponse> Login(AuthDto authDto);
         Task<RegisterResponse> Register(RegisterDTO authDto);
-        Task<RegisterResponse> RegisterAsOrganizer(RegisterDTO authDto);
+        Task<RegisterResponse> RegisterAsOrganizer(AuthDto authDto);
     }
 }

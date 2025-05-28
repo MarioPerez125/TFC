@@ -47,9 +47,9 @@ class _LoginScreenState extends State<LoginScreen> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -79,9 +79,9 @@ class _LoginScreenState extends State<LoginScreen> {
                 Text(
                   'Inicia Sesión',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                        color: Colors.deepPurple,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    color: Colors.deepPurple,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
                 const SizedBox(height: 30),
                 Form(
@@ -92,6 +92,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         controller: _usernameController,
                         decoration: const InputDecoration(
                           labelText: 'Usuario',
+                          floatingLabelBehavior: FloatingLabelBehavior.never,
+
                           prefixIcon: Icon(Icons.person),
                         ),
                         validator: (value) {
@@ -106,6 +108,8 @@ class _LoginScreenState extends State<LoginScreen> {
                         controller: _passwordController,
                         decoration: const InputDecoration(
                           labelText: 'Contraseña',
+                          floatingLabelBehavior: FloatingLabelBehavior.never,
+
                           prefixIcon: Icon(Icons.lock),
                         ),
                         obscureText: true,
@@ -138,7 +142,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => const RegisterScreen()),
+                      MaterialPageRoute(
+                        builder: (context) => const RegisterScreen(),
+                      ),
                     );
                   },
                   child: const Text('¿No tienes cuenta? Regístrate'),

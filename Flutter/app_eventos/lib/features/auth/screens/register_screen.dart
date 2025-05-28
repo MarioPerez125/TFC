@@ -55,7 +55,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
         _selectedBirthDate = picked;
         _birthDateController.text =
             "${picked.day.toString().padLeft(2, '0')}/${picked.month.toString().padLeft(2, '0')}/${picked.year}";
-        // Guarda el string en formato yyyy-MM-dd para el DTO:
         _birthDateForDto = "${picked.year.toString().padLeft(4, '0')}-"
                            "${picked.month.toString().padLeft(2, '0')}-"
                            "${picked.day.toString().padLeft(2, '0')}";
@@ -70,23 +69,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
-      final success = await authProvider.register(
+      final result = await authProvider.register(
         _nameController.text.trim(),
         _lastNameController.text.trim(),
-        _emailController.text.trim(),      // <-- email aquí
-        _passwordController.text.trim(),   // <-- password aquí
-        _usernameController.text.trim(),   // <-- username aquí
-        phone: int.tryParse(_phoneController.text.trim()),
-        birthDate: _birthDateForDto,
-        city: _cityController.text.trim(),
-        country: _countryController.text.trim(),
+        _emailController.text.trim(),
+        _passwordController.text.trim(),
+        _usernameController.text.trim(),
+        int.parse(_phoneController.text.trim()),
+        _birthDateForDto!,
+        _cityController.text.trim(),
+        _countryController.text.trim(),
       );
 
-      if (success && mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Registro exitoso!')));
-        Navigator.pop(context); // Vuelve al login
+      if (result != null && mounted) {
+        // Registro exitoso: redirige a login y muestra mensaje
+        Navigator.pushReplacementNamed(context, '/login');
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('¡Registro exitoso! Inicia sesión para continuar.')),
+        );
       }
     } catch (e) {
       if (mounted) {

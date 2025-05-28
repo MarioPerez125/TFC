@@ -357,19 +357,3 @@ class _ProfileRow extends StatelessWidget {
     );
   }
 }
-
-Future<bool> registerAsOrganizer(RegisterDto registerDTO) async {
-  final response = await _apiClient.post(
-    Uri.parse('/auth/register-as-organizer'),
-    body: registerDTO.toJson(),
-  );
-  return response.statusCode == 200;
-}
-
-Future<bool> registerAsFighter(FighterDto fighterDto) async {
-  final response = await _apiClient.post(
-    Uri.parse('/fighters/register-as-fighter'),
-    body: fighterDto.toJson(),
-  );
-  return response.statusCode == 200;
-}

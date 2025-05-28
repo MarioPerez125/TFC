@@ -110,50 +110,31 @@ namespace TFC.AppEventos.Application.Main
             }
         }
 
-        public async Task<RegisterResponse> RegisterAsOrganizer(RegisterDTO registerDTO)
+        public async Task<RegisterResponse> RegisterAsOrganizer(AuthDto authDto)
         {
             RegisterResponse response = new RegisterResponse();
             try
             {
                 // Validaciones básicas
-                if (registerDTO == null)
+                if (authDto == null)
                 {
                     response.ResponseCode = ResponseCodes.ERROR_USER_NOTFOUND;
                     throw new Exception("Los datos de autenticación no pueden ser nulos");
                 }
 
-                if (string.IsNullOrWhiteSpace(registerDTO.Username))
+                if (string.IsNullOrWhiteSpace(authDto.Username))
                 {
                     response.ResponseCode = ResponseCodes.ERROR_USER_NOTFOUND;
                     throw new Exception("El nombre de usuario es requerido");
                 }
 
-                if (string.IsNullOrWhiteSpace(registerDTO.Password))
+                if (string.IsNullOrWhiteSpace(authDto.Password))
                 {
                     response.ResponseCode = ResponseCodes.ERROR_BAD_PASSWORD;
                     throw new Exception("La contraseña es requerida");
                 }
-
-                if (registerDTO.Password.Length < 6)
-                {
-                    response.ResponseCode = ResponseCodes.ERROR_BAD_PASSWORD;
-                    throw new Exception("La contraseña debe tener al menos 6 caracteres");
-                }
-
-                if (string.IsNullOrWhiteSpace(registerDTO.Email))
-                {
-                    response.ResponseCode = ResponseCodes.ERROR_BAD_EMAIL;
-                    throw new Exception("El email es requerido");
-                }
-
-                // Validación simple de email
-                if (!registerDTO.Email.Contains("@"))
-                {
-                    response.ResponseCode = ResponseCodes.ERROR_BAD_EMAIL;
-                    throw new Exception("El email no es válido");
-                }
                 // Llamada al repositorio
-                return await _authRepository.RegisterAsOrganizer(registerDTO);
+                return await _authRepository.RegisterAsOrganizer(authDto);
             }
             catch (Exception ex)
             {
