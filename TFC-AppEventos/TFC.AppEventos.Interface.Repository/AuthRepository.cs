@@ -129,7 +129,6 @@ namespace TFC.AppEventos.Infraestructure.Repository.AuthRepository
             {
                 if (user != null)
                 {
-                    await _context.Users.AddAsync(user);
                     await _context.SaveChangesAsync();
 
                     response.IsSuccess = true;
