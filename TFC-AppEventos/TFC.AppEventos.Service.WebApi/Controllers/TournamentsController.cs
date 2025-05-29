@@ -54,8 +54,6 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
         {
             CreateTournamentResponse response = new CreateTournamentResponse();
 
-            tournamentDto.EndDate = tournamentDto.StartDate.AddHours(6);
-
             int organizerId = tournamentDto.OrganizerId;
 
             response = await _tournamentsApplication.CreateTournament(tournamentDto, organizerId);

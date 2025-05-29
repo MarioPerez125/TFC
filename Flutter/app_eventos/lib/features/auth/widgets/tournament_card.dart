@@ -89,7 +89,7 @@ class TournamentCard extends StatelessWidget {
                   Icon(Icons.sports_mma, color: Colors.deepPurple, size: 28),
                   const SizedBox(width: 10),
                   Text(
-                    tournament.sportType,
+                    tournament.location,
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                       color: Colors.deepPurple,
@@ -98,7 +98,9 @@ class TournamentCard extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 8),
-              Text('Lugar: ${tournament.location}', style: const TextStyle(fontWeight: FontWeight.w500)),
+              Text('Arena: ${tournament.arena}', style: const TextStyle(fontWeight: FontWeight.w500)),
+              const SizedBox(height: 8),
+              Text('Deporte: ${tournament.sportType}', style: const TextStyle(fontWeight: FontWeight.w500)),
               const SizedBox(height: 8),
               Row(
                 children: [

@@ -26,13 +26,13 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
         /// </summary>
         [HttpPost("register-as-fighter")]
         //[Authorize(Roles = "User")]
-        public async Task<ActionResult<FightersDTO>> Register([FromBody] FightersDTO fighterDto)
+        public async Task<ActionResult<UserDto>> Register([FromBody] FightersDTO fighterDto)
         {
-            RegisterFighterResponse response = await _fightersApplication.RegisterFighter(fighterDto);
+            ChangeRoleResponse response = await _fightersApplication.RegisterFighter(fighterDto);
 
             if (response.IsSuccess)
             {
-                return Ok(response.Fighter);
+                return Ok(response.User);
             }
             else
             {
@@ -81,12 +81,26 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
 
         [HttpGet("user-fighter-info/{userId}")]
         //[Authorize(Roles = nameof(Roles.Fighter))]
-        public async Task<ActionResult<UserFighterInfo>> GetFighterInfo(int userId)
+        public async Task<ActionResult<FightersDTO>> GetFighterInfo(int userId)
         {
             GetFighterInfoResponse response = await _fightersApplication.GetFighterInfo(userId);
             if (response.IsSuccess)
             {
-                return Ok(response.FighterInfo);
+                return Ok(response.FighterInfo.Fighter);
+            }
+            else
+            {
+                return BadRequest(response.Message);
+            }
+        }
+
+        [HttpGet("user-fighter-list")]
+        public async Task<ActionResult<List<FighterForFriendList>>> GetFighterList()
+        {
+            GetUserFighterInfoListResponse response = await _fightersApplication.GetFighterList();
+            if (response.IsSuccess)
+            {
+                return Ok(response.fighterList);
             }
             else
             {

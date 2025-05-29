@@ -33,14 +33,6 @@ namespace TFC.AppEventos.Application.Main
                 {
                     throw new Exception("El nombre del torneo no puede ser nulo o vacío");
                 }
-                if (tournamentDto.StartDate == DateTime.MinValue)
-                {
-                    throw new Exception("La fecha de inicio no puede ser nula");
-                }
-                if (tournamentDto.StartDate >= tournamentDto.EndDate)
-                {
-                    throw new Exception("La fecha de inicio debe ser anterior a la fecha de fin");
-                }
                 if (tournamentDto.SportType == null)
                 {
                     throw new Exception("El tipo de deporte no puede ser nulo");

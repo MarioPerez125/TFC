@@ -1,0 +1,159 @@
+import 'package:flutter/material.dart';
+import '../../../core/models/dto/tournament_dto.dart';
+
+class CreateTournamentDialog extends StatefulWidget {
+  final int organizerId;
+  const CreateTournamentDialog({super.key, required this.organizerId});
+
+  @override
+  State<CreateTournamentDialog> createState() => _CreateTournamentDialogState();
+}
+
+class _CreateTournamentDialogState extends State<CreateTournamentDialog> {
+  final _formKey = GlobalKey<FormState>();
+  final _locationController = TextEditingController();
+  final _arenaController = TextEditingController();
+  final _sportTypeController = TextEditingController();
+  DateTime? _startDate;
+  DateTime? _endDate;
+
+  @override
+  void dispose() {
+    _locationController.dispose();
+    _arenaController.dispose();
+    _sportTypeController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _pickDateTime({
+    required BuildContext context,
+    required DateTime? initialDate,
+    required Function(DateTime) onPicked,
+    DateTime? firstDate,
+  }) async {
+    final pickedDate = await showDatePicker(
+      context: context,
+      initialDate: initialDate ?? DateTime.now(),
+      firstDate: firstDate ?? DateTime.now(),
+      lastDate: DateTime.now().add(const Duration(days: 365)),
+    );
+    if (pickedDate != null) {
+      final pickedTime = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.fromDateTime(initialDate ?? DateTime.now()),
+      );
+      if (pickedTime != null) {
+        final dt = DateTime(
+          pickedDate.year,
+          pickedDate.month,
+          pickedDate.day,
+          pickedTime.hour,
+          pickedTime.minute,
+        );
+        onPicked(dt);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: const Text('Crear Torneo'),
+      content: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: _locationController,
+                decoration: const InputDecoration(labelText: 'Lugar'),
+                validator: (v) => v == null || v.isEmpty ? 'Obligatorio' : null,
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _arenaController,
+                decoration: const InputDecoration(labelText: 'Arena'),
+                validator: (v) => v == null || v.isEmpty ? 'Obligatorio' : null,
+              ),
+              const SizedBox(height: 12),
+              TextFormField(
+                controller: _sportTypeController,
+                decoration: const InputDecoration(labelText: 'Deporte'),
+                validator: (v) => v == null || v.isEmpty ? 'Obligatorio' : null,
+              ),
+              const SizedBox(height: 12),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(_startDate == null
+                    ? 'Selecciona fecha y hora de inicio'
+                    : 'Inicio: ${_startDate!.day.toString().padLeft(2, '0')}/'
+                      '${_startDate!.month.toString().padLeft(2, '0')}/'
+                      '${_startDate!.year} ${_startDate!.hour.toString().padLeft(2, '0')}:'
+                      '${_startDate!.minute.toString().padLeft(2, '0')}'),
+                trailing: const Icon(Icons.calendar_today),
+                onTap: () => _pickDateTime(
+                  context: context,
+                  initialDate: _startDate,
+                  onPicked: (dt) => setState(() => _startDate = dt),
+                ),
+              ),
+              ListTile(
+                contentPadding: EdgeInsets.zero,
+                title: Text(_endDate == null
+                    ? 'Selecciona fecha y hora de finalización'
+                    : 'Fin: ${_endDate!.day.toString().padLeft(2, '0')}/'
+                      '${_endDate!.month.toString().padLeft(2, '0')}/'
+                      '${_endDate!.year} ${_endDate!.hour.toString().padLeft(2, '0')}:'
+                      '${_endDate!.minute.toString().padLeft(2, '0')}'),
+                trailing: const Icon(Icons.calendar_today),
+                onTap: () => _pickDateTime(
+                  context: context,
+                  initialDate: _endDate ?? _startDate,
+                  firstDate: _startDate ?? DateTime.now(),
+                  onPicked: (dt) => setState(() => _endDate = dt),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancelar'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            if (_formKey.currentState!.validate() &&
+                _startDate != null &&
+                _endDate != null &&
+                _endDate!.isAfter(_startDate!)) {
+              Navigator.pop(
+                context,
+                TournamentDto(
+                  tournamentId: 0,
+                  location: _locationController.text,
+                  arena: _arenaController.text,
+                  startDate: _startDate!.toIso8601String(),
+                  endDate: _endDate!.toIso8601String(),
+                  sportType: _sportTypeController.text,
+                  organizerId: widget.organizerId,
+                ),
+              );
+            } else if (_startDate == null || _endDate == null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Selecciona ambas fechas')),
+              );
+            } else if (!_endDate!.isAfter(_startDate!)) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('La fecha de fin debe ser posterior a la de inicio')),
+              );
+            }
+          },
+          child: const Text('Crear'),
+        ),
+      ],
+    );
+  }
+}

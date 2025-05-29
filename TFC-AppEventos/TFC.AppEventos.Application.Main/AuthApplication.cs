@@ -110,9 +110,9 @@ namespace TFC.AppEventos.Application.Main
             }
         }
 
-        public async Task<RegisterResponse> RegisterAsOrganizer(AuthDto authDto)
+        public async Task<ChangeRoleResponse> RegisterAsOrganizer(AuthDto authDto)
         {
-            RegisterResponse response = new RegisterResponse();
+            ChangeRoleResponse response = new ChangeRoleResponse();
             try
             {
                 // Validaciones básicas

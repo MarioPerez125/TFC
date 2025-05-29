@@ -6,15 +6,11 @@ class ApiResponse {
   final dynamic data;
   final String? error;
 
-  ApiResponse({
-    required this.statusCode,
-    this.data,
-    this.error,
-  });
+  ApiResponse({required this.statusCode, this.data, this.error});
 }
 
 class ApiClient {
-  static const String baseUrl = 'http://10.0.2.2:5263/api';
+  static const String baseUrl = 'http://10.0.2.2:5263/api/';
   final Dio _dio = Dio(BaseOptions(baseUrl: baseUrl));
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
 
@@ -40,6 +36,8 @@ class ApiClient {
         data: body,
         options: Options(headers: headers),
       );
+      print('POST a: ${_dio.options.baseUrl}$endpoint');
+      print('Body: $body');
       return ApiResponse(
         statusCode: response.statusCode ?? 0,
         data: response.data,
@@ -56,7 +54,7 @@ class ApiClient {
   Future<ApiResponse> get(
     String endpoint, {
     Map<String, dynamic>? queryParams,
-    bool requiresAuth = true,
+    bool requiresAuth = false,
   }) async {
     try {
       final headers = <String, dynamic>{};
@@ -66,8 +64,13 @@ class ApiClient {
           headers['Authorization'] = 'Bearer $token';
         }
       }
+      // Quita el '/' inicial si existe
+      final cleanEndpoint = endpoint.startsWith('/')
+          ? endpoint.substring(1)
+          : endpoint;
+      print('Llamando a: ${_dio.options.baseUrl}$cleanEndpoint');
       final response = await _dio.get(
-        endpoint,
+        cleanEndpoint,
         queryParameters: queryParams,
         options: Options(headers: headers),
       );

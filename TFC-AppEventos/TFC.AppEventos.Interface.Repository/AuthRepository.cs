@@ -34,7 +34,14 @@ namespace TFC.AppEventos.Infraestructure.Repository.AuthRepository
                         UserId = user.UserId,
                         Username = user.Username,
                         Email = user.Email,
+                        Name = user.Name,
+                        LastName = user.LastName,
+                        Phone = user.Phone,
+                        BirthDate = user.BirthDate,
+                        City = user.City,
+                        Country = user.Country,
                         Role = user.Role
+
                     };
                     response.IsSuccess = true;
                     response.Message = "Usuario autenticado correctamente";
@@ -102,27 +109,33 @@ namespace TFC.AppEventos.Infraestructure.Repository.AuthRepository
             }
         }
 
-        public async Task<RegisterResponse> RegisterAsOrganizer(AuthDto authDto)
+        public async Task<ChangeRoleResponse> RegisterAsOrganizer(AuthDto authDto)
         {
-            RegisterResponse response = new RegisterResponse();
-
-            
+            ChangeRoleResponse response = new ChangeRoleResponse();
 
             User? user = await _context.Users
                 .FirstOrDefaultAsync(u => u.Username == authDto.Username && u.Password == PasswordUtils.PasswordEncoder(authDto.Password));
+            if (user == null)
+            {
+                response.IsSuccess = false;
+                response.Message = "Usuario no encontrado";
+                return response;
+            }
+
             user.Role = Roles.Organizer.ToString();
 
-            response.RegisterDTO = new RegisterDTO
+            response.User = new UserDto
             {
+                UserId = user.UserId,
                 Username = user.Username,
-                Password = user.Password,
                 Email = user.Email,
                 Name = user.Name,
                 LastName = user.LastName,
                 Phone = user.Phone,
                 BirthDate = user.BirthDate,
                 City = user.City,
-                Country = user.Country
+                Country = user.Country,
+                Role = user.Role
             };
 
             try

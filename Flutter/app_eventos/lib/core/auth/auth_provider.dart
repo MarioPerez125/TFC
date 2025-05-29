@@ -1,5 +1,8 @@
+import 'package:app_eventos/core/models/dto/auth_dto.dart';
 import 'package:app_eventos/core/models/dto/register_dto.dart';
+import 'package:app_eventos/core/models/dto/user_dto.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import '../models/user_model.dart';
 import 'auth_service.dart';
 
@@ -75,5 +78,33 @@ class AuthProvider with ChangeNotifier {
     final userDto = await _authService.getCurrentUser();
     _user = userDto != null ? User.fromDto(userDto) : null;
     notifyListeners();
+  }
+
+  Future<void> registerAsOrganizer(AuthDto authDto, BuildContext context) async {
+    final userDto = await AuthService().registerAsOrganizer(authDto);
+    if (userDto != null && context.mounted) {
+      await setUserFromDto(userDto);
+      await _showResultDialog(
+        context,
+        true,
+        '¡Solicitud para ser organizador enviada con éxito!',
+      );
+    } else if (context.mounted) {
+      await _showResultDialog(
+        context,
+        false,
+        'No se pudo enviar la solicitud.',
+      );
+    }
+  }
+
+  Future<void> setUserFromDto(UserDto userDto) async {
+    _user = User.fromDto(userDto);
+    await _authService.saveUserDto(userDto); // <-- Añade esto
+    notifyListeners();
+  }
+
+  Future<void> _showResultDialog(BuildContext context, bool success, String message) async {
+    // Implementa la lógica para mostrar el diálogo con el resultado
   }
 }

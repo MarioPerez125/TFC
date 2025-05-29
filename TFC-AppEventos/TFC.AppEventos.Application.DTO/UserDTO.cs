@@ -11,8 +11,8 @@ namespace TFC.AppEventos.Application.DTO
         public int? UserId { get; set; }
         public string Name { get; set; }
         public string LastName { get; set; }
-        public int Phone { get; set; }
-        public DateOnly? BirthDate { get; set; }
+        public int? Phone { get; set; }
+        public string? BirthDate { get; set; }
         public string? City { get; set; }
         public string? Country { get; set; }
         public string Username { get; set; }

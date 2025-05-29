@@ -40,6 +40,11 @@ namespace TFC.AppEventos.Application.Main
             }
         }
 
+        public Task<GetUserFighterInfoListResponse> GetFighterList()
+        {
+            return _fightersRepository.GetFighterList();
+        }
+
         public async Task<GetMyTournamentsAsFighterResponse> GetMyTournamentsAsFighter(int userId)
         {
             if (userId <= 0)
@@ -57,9 +62,9 @@ namespace TFC.AppEventos.Application.Main
             }
         }
 
-        public async Task<RegisterFighterResponse> RegisterFighter(FightersDTO fighterDto)
+        public async Task<ChangeRoleResponse> RegisterFighter(FightersDTO fighterDto)
         {
-            RegisterFighterResponse response = new RegisterFighterResponse();
+            ChangeRoleResponse response = new ChangeRoleResponse();
 
             try
             {

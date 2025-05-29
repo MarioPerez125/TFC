@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:app_eventos/core/models/dto/fighter_dto.dart';
+import 'package:app_eventos/core/models/dto/fighter_for_friend_dto.dart';
 import 'package:app_eventos/core/models/dto/register_dto.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -105,21 +106,69 @@ class AuthService {
     return token != null;
   }
 
-  Future<bool> registerAsOrganizer(AuthDto authDto) async {
+  Future<UserDto?> registerAsOrganizer(AuthDto authDto) async {
     final response = await _apiClient.post(
       Endpoints.registerAsOrganizer,
       body: authDto.toJson(),
-      requiresAuth: true,
+      requiresAuth: false,
     );
-    return response.statusCode == 200;
+    if (response.statusCode == 200 && response.data != null) {
+      return UserDto.fromJson(response.data);
+    }
+    return null;
   }
 
-  Future<bool> registerAsFighter(FighterDto fighterDto) async {
+  Future<UserDto?> registerAsFighter(FighterDto fighterDto) async {
     final response = await _apiClient.post(
-      '/fighters/register-as-fighter',
+      Endpoints.registerAsFighter,
       body: fighterDto.toJson(),
-      requiresAuth: true,
+      requiresAuth: false,
     );
-    return response.statusCode == 200;
+    
+    if (response.statusCode == 200 && response.data != null) {
+      return UserDto.fromJson(response.data);
+    }
+    return null;
+  }
+
+  Future<void> saveUserDto(UserDto userDto) async {
+    final prefs = await SharedPreferences.getInstance();
+    final authData = prefs.getString('auth_data');
+    if (authData != null) {
+      final Map<String, dynamic> decoded = jsonDecode(authData);
+      decoded['user'] = userDto.toJson();
+      await prefs.setString('auth_data', jsonEncode(decoded));
+    }
+  }
+  
+  Future<FighterDto?> getFighterInfo(int userId) async {
+    final response = await _apiClient.get(
+      '${Endpoints.fighterInfo}/$userId',
+      requiresAuth: false,
+    );
+    print('${Endpoints.fighterInfo}/$userId');
+    if (response.statusCode == 200 && response.data != null) {
+      return FighterDto.fromJson(response.data);
+    }
+    return null;
+  }
+
+  Future<List<FighterForFriendDto>> getAllFighters() async {
+    final response = await _apiClient.get(
+      Endpoints.getFighters, 
+      requiresAuth: false
+    );
+    print('Respuesta fighters: ${response.data}');
+    if (response.statusCode == 200 && response.data is List) {
+      return (response.data as List)
+          .map((e) => FighterForFriendDto.fromJson(e as Map<String, dynamic>))
+          .toList();
+    }
+    if (response.data is Map && response.data['fighterList'] is List) {
+      return (response.data['fighterList'] as List)
+          .map((e) => FighterForFriendDto.fromJson(e as Map<String, dynamic>))
+          .toList();
+    }
+    return [];
   }
 }

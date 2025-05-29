@@ -7,6 +7,6 @@ namespace TFC.AppEventos.Infraestructure.Interface.IAuthRepository
     {
         Task<LoginResponse> Login(AuthDto authDto);
         Task<RegisterResponse> Register(RegisterDTO registerDTO);
-        Task<RegisterResponse> RegisterAsOrganizer(AuthDto authDto);
+        Task<ChangeRoleResponse> RegisterAsOrganizer(AuthDto authDto);
     }
 }

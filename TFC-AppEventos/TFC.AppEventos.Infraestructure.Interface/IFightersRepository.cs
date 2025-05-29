@@ -11,8 +11,9 @@ namespace TFC.AppEventos.Infraestructure.Interface
     public interface IFightersRepository
     {
         Task<GetFighterInfoResponse> GetFighterInfo(int userId);
+        Task<GetUserFighterInfoListResponse> GetFighterList();
         Task<GetMyTournamentsAsFighterResponse> GetMyTournamentsAsFighter(int userId);
-        Task<RegisterFighterResponse> RegisterFighter(FightersDTO fighterDto);
+        Task<ChangeRoleResponse> RegisterFighter(FightersDTO fighterDto);
         Task<bool> UnregisterFighter(int id);
     }
 }

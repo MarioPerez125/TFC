@@ -66,6 +66,43 @@ namespace TFC.AppEventos.Infraestructure.Repository
             return response;
         }
 
+        public async Task<GetUserFighterInfoListResponse> GetFighterList()
+        {
+            GetUserFighterInfoListResponse response = new GetUserFighterInfoListResponse();
+            List<Fighter> fighters = await _context.Fighters.ToListAsync();
+            foreach (var f in fighters)
+            {
+                User? user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == f.UserId);
+                if (user != null)
+                {
+                    FighterForFriendList userFighterInfo = new FighterForFriendList
+                    {
+                        UserId = user.UserId,
+                        Username = user.Username,
+                        Email = user.Email,
+                        Name = user.Name,
+                        LastName = user.LastName,
+                        Phone = user.Phone,
+                        BirthDate = user.BirthDate,
+                        City = user.City,
+                        Country = user.Country,
+                        Role = user.Role,
+                        FighterId = f.FighterId,
+                        Wins = f.Wins,
+                        Losses = f.Losses,
+                        Draws = f.Draws,
+                        WeightClass = f.WeightClass,
+                        Height = f.Height,
+                        Reach = f.Reach
+                    };
+                    response.fighterList.Add(userFighterInfo);
+                }
+            }
+            response.IsSuccess = true;
+            return response;
+        }
+
+
         public async Task<GetMyTournamentsAsFighterResponse> GetMyTournamentsAsFighter(int userId)
         {
             GetMyTournamentsAsFighterResponse response = new GetMyTournamentsAsFighterResponse();
@@ -108,30 +145,52 @@ namespace TFC.AppEventos.Infraestructure.Repository
             }
         }
 
-        public async Task<RegisterFighterResponse> RegisterFighter(FightersDTO fighterDto)
+        public async Task<ChangeRoleResponse> RegisterFighter(FightersDTO fighterDto)
         {
-            RegisterFighterResponse response = new RegisterFighterResponse();
+            ChangeRoleResponse response = new ChangeRoleResponse();
 
             User? user = await _context.Users.FirstOrDefaultAsync(u => u.UserId == fighterDto.UserId);
+            user.Role = Roles.Fighter.ToString();
+
 
             if (user != null)
             {
-                user.Role = Roles.Fighter.ToString();
-                Fighter fighter = new Fighter
+                response.User = new UserDto
                 {
-                    UserId = fighterDto.UserId,
-                    Wins = fighterDto.Wins,
-                    Losses = fighterDto.Losses,
-                    Draws = fighterDto.Draws,
-                    WeightClass = fighterDto.WeightClass,
-                    Height = fighterDto.Height,
-                    Reach = fighterDto.Reach
+                    UserId = user.UserId,
+                    Username = user.Username,
+                    Email = user.Email,
+                    Name = user.Name,
+                    LastName = user.LastName,
+                    Phone = user.Phone,
+                    BirthDate = user.BirthDate,
+                    City = user.City,
+                    Country = user.Country,
+                    Role = user.Role
                 };
-                await _context.Fighters.AddAsync(fighter);
-                Console.WriteLine(fighter.ToString());
+                Fighter? existingFighter = await _context.Fighters.FirstOrDefaultAsync(f => f.UserId == user.UserId);
+                if (!await _context.Fighters.AnyAsync(f => f.UserId == user.UserId))
+                {
+                    Fighter fighter = new Fighter
+                    {
+                        UserId = fighterDto.UserId,
+                        Wins = fighterDto.Wins,
+                        Losses = fighterDto.Losses,
+                        Draws = fighterDto.Draws,
+                        WeightClass = fighterDto.WeightClass,
+                        Height = fighterDto.Height,
+                        Reach = fighterDto.Reach
+                    };
+                    await _context.Fighters.AddAsync(fighter);
+                }
+                else
+                {
+                    existingFighter.Height = fighterDto.Height;
+                    existingFighter.Reach = fighterDto.Reach;
+                    existingFighter.WeightClass = fighterDto.WeightClass;
+                }
                 await _context.SaveChangesAsync();
 
-                response.Fighter = fighterDto;
                 response.IsSuccess = true;
                 response.Message = "Luchador registrado correctamente";
                 return response;

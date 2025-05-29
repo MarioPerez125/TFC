@@ -26,4 +26,16 @@ class TournamentDto {
     sportType: json['sportType'],
     organizerId: json['organizerId'],
   );
+
+  Map<String, dynamic> toJson() {
+    return {
+      'tournamentId': tournamentId,
+      'location': location,
+      'arena': arena,
+      'startDate': startDate,
+      'endDate': endDate,
+      'sportType': sportType,
+      'organizerId': organizerId,
+    };
+  }
 }

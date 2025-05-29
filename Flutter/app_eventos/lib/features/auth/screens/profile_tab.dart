@@ -1,4 +1,5 @@
 import 'package:app_eventos/core/auth/auth_provider.dart';
+import 'package:app_eventos/features/auth/widgets/fighter_request_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as _apiClient;
 import 'package:provider/provider.dart';
@@ -44,7 +45,6 @@ class ProfileTab extends StatelessWidget {
     final user = authProvider.user;
     if (user == null) return;
 
-    // Pide la contraseña al usuario para mayor seguridad
     final passwordController = TextEditingController();
     final result = await showDialog<String>(
       context: context,
@@ -82,7 +82,11 @@ class ProfileTab extends StatelessWidget {
         username: user.username,
         password: result,
       );
-      final success = await AuthService().registerAsOrganizer(authDto);
+      final userDto = await AuthService().registerAsOrganizer(authDto);
+      final bool success = userDto != null;
+      if (success) {
+        await authProvider.setUserFromDto(userDto!);
+      }
       if (context.mounted) {
         await _showResultDialog(
           context,
@@ -102,91 +106,73 @@ class ProfileTab extends StatelessWidget {
     final user = authProvider.user;
     if (user == null) return;
 
-    final weightController = TextEditingController();
-    final heightController = TextEditingController();
-    final reachController = TextEditingController();
-
-    final result = await showDialog<bool>(
+    final result = await showDialog<Map<String, dynamic>>(
       context: context,
-      builder: (dialogContext) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-          title: const Text('Solicitar ser peleador'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              TextField(
-                controller: weightController,
-                decoration: const InputDecoration(
-                  labelText: 'Categoría de peso',
-                ),
-              ),
-              TextField(
-                controller: heightController,
-                decoration: const InputDecoration(labelText: 'Altura (cm)'),
-                keyboardType: TextInputType.number,
-              ),
-              TextField(
-                controller: reachController,
-                decoration: const InputDecoration(labelText: 'Alcance (cm)'),
-                keyboardType: TextInputType.number,
-              ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: const Text('Cancelar'),
-            ),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.deepPurple,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              ),
-              onPressed: () async {
-                final fighterDTO = FighterDto(
-                  userId: user.userId ?? 0,
-                  weightClass: weightController.text,
-                  height: int.tryParse(heightController.text) ?? 0,
-                  reach: int.tryParse(reachController.text) ?? 0,
-                  wins: 0,
-                  losses: 0,
-                  draws: 0,
-                );
-                final success = await AuthService().registerAsFighter(fighterDTO);
-                if (success) {
-                  await authProvider.refreshUser(); // <--- Esto actualiza el rol en la UI
-                }
-                Navigator.of(dialogContext).pop(success);
-              },
-              child: const Text('Solicitar'),
-            ),
-          ],
-        );
-      },
+      builder: (context) => const FighterRequestDialog(),
     );
 
-    if (result != null && context.mounted) {
-      if (result) {
-        await authProvider.refreshUser();
-      }
-      await _showResultDialog(
-        context,
-        result,
-        result
-            ? '¡Solicitud para ser peleador enviada con éxito!'
-            : 'No se pudo enviar la solicitud.',
+    if (result != null) {
+      final fighterDTO = FighterDto(
+        userId: user.userId ?? 0,
+        weightClass: result['category'],
+        height: result['height'],
+        reach: result['reach'],
+        wins: 0,
+        losses: 0,
+        draws: 0,
       );
+      final userDto = await AuthService().registerAsFighter(fighterDTO);
+      final bool success = userDto != null;
+      if (success) {
+        await authProvider.setUserFromDto(userDto!);
+      }
+      if (context.mounted) {
+        await _showResultDialog(
+          context,
+          success,
+          success
+              ? '¡Solicitud para ser peleador enviada con éxito!'
+              : 'No se pudo enviar la solicitud.',
+        );
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final authProvider = Provider.of<AuthProvider>(context, listen: false);
+    final authProvider = Provider.of<AuthProvider>(context);
     final user = authProvider.user;
     if (user == null) {
       return const Center(child: Text('No hay usuario logueado'));
     }
+
+    final isUser = user.role == null || user.role == 'User';
+    final isFighter = user.role == 'Fighter';
+    final isOrganizer = user.role == 'Organizer';
+
+    List<Widget> actionButtons = [];
+
+    if (isUser || isFighter) {
+      actionButtons.add(
+        _ActionButton(
+          icon: Icons.emoji_events,
+          label: 'Solicitar ser Organizador',
+          color: Colors.indigo,
+          onPressed: () => _solicitarOrganizador(context, authProvider),
+        ),
+      );
+    }
+    if (isUser || isOrganizer) {
+      actionButtons.add(
+        _ActionButton(
+          icon: Icons.sports_mma,
+          label: 'Solicitar ser Peleador',
+          color: Colors.deepPurple,
+          onPressed: () => _solicitarPeleador(context, authProvider),
+        ),
+      );
+    }
+
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
@@ -262,57 +248,84 @@ class ProfileTab extends StatelessWidget {
             ),
           ),
         ),
+        if (isFighter) ...[
+          const SizedBox(height: 24),
+          FutureBuilder<FighterDto?>(
+            future: AuthService().getFighterInfo(user.userId!),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (!snapshot.hasData || snapshot.data == null) {
+                return const Center(child: Text('No se encontró información de peleador.'));
+              }
+              final fighter = snapshot.data!;
+              return Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(18),
+                ),
+                elevation: 4,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 20),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'Información de Peleador',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                          color: Colors.deepPurple,
+                        ),
+                      ),
+                      const Divider(),
+                      _ProfileRow(
+                        icon: Icons.sports_mma,
+                        label: 'Categoría de peso',
+                        value: fighter.weightClass,
+                      ),
+                      _ProfileRow(
+                        icon: Icons.height,
+                        label: 'Altura',
+                        value: '${fighter.height} cm',
+                      ),
+                      _ProfileRow(
+                        icon: Icons.open_with,
+                        label: 'Alcance',
+                        value: '${fighter.reach} cm',
+                      ),
+                      _ProfileRow(
+                        icon: Icons.emoji_events,
+                        label: 'Victorias',
+                        value: '${fighter.wins}',
+                      ),
+                      _ProfileRow(
+                        icon: Icons.close,
+                        label: 'Derrotas',
+                        value: '${fighter.losses}',
+                      ),
+                      _ProfileRow(
+                        icon: Icons.remove,
+                        label: 'Empates',
+                        value: '${fighter.draws}',
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
         const SizedBox(height: 32),
-        Row(
-          children: [
-            Expanded(
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.sports_mma, size: 28),
-                label: const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                  child: Text(
-                    'Solicitar ser Peleador',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.deepPurple,
-                  foregroundColor: Colors.white,
-                  elevation: 8,
-                  shadowColor: Colors.deepPurple.withOpacity(0.3),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                ),
-                onPressed: () => _solicitarPeleador(context, authProvider),
-              ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: ElevatedButton.icon(
-                icon: const Icon(Icons.emoji_events, size: 28),
-                label: const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 16),
-                  child: Text(
-                    'Solicitar ser Organizador',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.indigo,
-                  foregroundColor: Colors.white,
-                  elevation: 8,
-                  shadowColor: Colors.indigo.withOpacity(0.3),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(18),
-                  ),
-                ),
-                onPressed: () => _solicitarOrganizador(context, authProvider),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 24),
+        if (actionButtons.isNotEmpty)
+          Row(
+            mainAxisAlignment: actionButtons.length == 2
+                ? MainAxisAlignment.spaceBetween
+                : MainAxisAlignment.center,
+            children: actionButtons
+                .map((btn) => Expanded(child: btn))
+                .toList(),
+          ),
       ],
     );
   }
@@ -354,6 +367,44 @@ class _ProfileRow extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+// Widget para el botón de acción
+class _ActionButton extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onPressed;
+
+  const _ActionButton({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton.icon(
+      icon: Icon(icon, size: 28, color: Colors.white),
+      label: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Text(
+          label,
+          style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
+        ),
+      ),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: color,
+        elevation: 8,
+        shadowColor: color.withOpacity(0.3),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+        ),
+      ),
+      onPressed: onPressed,
     );
   }
 }

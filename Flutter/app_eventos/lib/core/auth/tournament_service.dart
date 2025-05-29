@@ -1,3 +1,4 @@
+import 'package:app_eventos/core/api/endpoints.dart';
 import 'package:app_eventos/core/models/dto/fighter_dto.dart';
 
 import '../api/api_client.dart';
@@ -38,5 +39,19 @@ class TournamentService {
           .toList();
     }
     return [];
+  }
+
+  Future<TournamentDto?> createTournament(TournamentDto dto) async {
+    print('Llamando a crear torneo...');
+    final response = await _apiClient.post(
+      Endpoints.createTournament,
+      body: dto.toJson(),
+      requiresAuth: false,
+    );
+    print('Respuesta crear torneo: ${response.statusCode} ${response.data}');
+    if (response.statusCode == 200 && response.data != null) {
+      return TournamentDto.fromJson(response.data);
+    }
+    return null;
   }
 }

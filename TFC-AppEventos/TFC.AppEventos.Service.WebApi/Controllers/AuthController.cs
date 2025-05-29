@@ -78,17 +78,17 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
         }
 
         [HttpPost("register-as-organizer")]
-        public async Task<ActionResult<AuthDto>> RegisterAsOrganizer([FromBody] AuthDto authDto)
+        public async Task<ActionResult<UserDto>> RegisterAsOrganizer([FromBody] AuthDto authDto)
         {
-            RegisterResponse response = await _authApplication.RegisterAsOrganizer(authDto);
+            ChangeRoleResponse response = await _authApplication.RegisterAsOrganizer(authDto);
 
             if (response.IsSuccess)
             {
-                return Ok(response.RegisterDTO);
+                return Ok(response.User);
             }
             else
             {
-                return BadRequest(response.Message);
+                return BadRequest();
             }
         }
 
