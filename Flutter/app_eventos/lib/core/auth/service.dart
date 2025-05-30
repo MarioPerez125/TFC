@@ -10,7 +10,7 @@ import '../models/dto/auth_dto.dart';
 import '../models/response/login_response.dart';
 import '../models/dto/user_dto.dart';
 
-class AuthService {
+class Service {
   final FlutterSecureStorage _secureStorage = const FlutterSecureStorage();
   final ApiClient _apiClient = ApiClient();
 
@@ -40,7 +40,9 @@ class AuthService {
   Future<void> _saveAuthData(LoginResponse loginResponse) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('auth_data', jsonEncode(loginResponse.toJson()));
+    print('Guardando token: ${loginResponse.token}');
     await _secureStorage.write(key: 'jwt_token', value: loginResponse.token);
+    print('Token guardado');
   }
 
   Future<String?> getToken() async {

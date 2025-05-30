@@ -1,4 +1,4 @@
-import 'package:app_eventos/core/auth/auth_service.dart';
+import 'package:app_eventos/core/auth/service.dart';
 import 'package:app_eventos/features/auth/screens/login_screen.dart';
 import 'package:app_eventos/features/auth/screens/main_screen.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +16,7 @@ void main() async {
   final token = await storage.read(key: 'jwt_token');
   final isLoggedIn = token != null;
 
-  final authProvider = AuthProvider(AuthService());
+  final authProvider = AuthProvider(Service());
   await authProvider.initialize();
 
   runApp(

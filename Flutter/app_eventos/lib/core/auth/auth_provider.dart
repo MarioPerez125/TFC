@@ -4,10 +4,10 @@ import 'package:app_eventos/core/models/dto/user_dto.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import '../models/user_model.dart';
-import 'auth_service.dart';
+import 'service.dart';
 
 class AuthProvider with ChangeNotifier {
-  final AuthService _authService;
+  final Service _authService;
   User? _user;
   bool _isLoading = false;
 
@@ -81,7 +81,7 @@ class AuthProvider with ChangeNotifier {
   }
 
   Future<void> registerAsOrganizer(AuthDto authDto, BuildContext context) async {
-    final userDto = await AuthService().registerAsOrganizer(authDto);
+    final userDto = await Service().registerAsOrganizer(authDto);
     if (userDto != null && context.mounted) {
       await setUserFromDto(userDto);
       await _showResultDialog(

@@ -3,7 +3,7 @@ import 'package:app_eventos/features/auth/widgets/fighter_request_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as _apiClient;
 import 'package:provider/provider.dart';
-import 'package:app_eventos/core/auth/auth_service.dart';
+import 'package:app_eventos/core/auth/service.dart';
 import 'package:app_eventos/core/models/dto/register_dto.dart';
 import 'package:app_eventos/core/models/dto/fighter_dto.dart';
 import 'package:app_eventos/core/models/dto/auth_dto.dart';
@@ -82,7 +82,7 @@ class ProfileTab extends StatelessWidget {
         username: user.username,
         password: result,
       );
-      final userDto = await AuthService().registerAsOrganizer(authDto);
+      final userDto = await Service().registerAsOrganizer(authDto);
       final bool success = userDto != null;
       if (success) {
         await authProvider.setUserFromDto(userDto!);
@@ -121,7 +121,7 @@ class ProfileTab extends StatelessWidget {
         losses: 0,
         draws: 0,
       );
-      final userDto = await AuthService().registerAsFighter(fighterDTO);
+      final userDto = await Service().registerAsFighter(fighterDTO);
       final bool success = userDto != null;
       if (success) {
         await authProvider.setUserFromDto(userDto!);
@@ -251,7 +251,7 @@ class ProfileTab extends StatelessWidget {
         if (isFighter) ...[
           const SizedBox(height: 24),
           FutureBuilder<FighterDto?>(
-            future: AuthService().getFighterInfo(user.userId!),
+            future: Service().getFighterInfo(user.userId!),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
