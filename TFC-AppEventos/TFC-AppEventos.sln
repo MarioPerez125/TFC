@@ -33,6 +33,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TFC.AppEventos.Transversal.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TFC.AppEventos.Infraestructure.Interface", "TFC.AppEventos.Infraestructure.Interface\TFC.AppEventos.Infraestructure.Interface.csproj", "{D4573CFC-12AA-4FD3-B8EE-4AA141F82AA9}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web", "Web", "{7BEBA64F-1A51-44C8-83C6-A8CFF3BEB032}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrganizerWeb", "OrganizerWeb\OrganizerWeb.csproj", "{A375A0AB-FF97-442E-9414-B836C1806D0E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -75,6 +79,10 @@ Global
 		{D4573CFC-12AA-4FD3-B8EE-4AA141F82AA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D4573CFC-12AA-4FD3-B8EE-4AA141F82AA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D4573CFC-12AA-4FD3-B8EE-4AA141F82AA9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A375A0AB-FF97-442E-9414-B836C1806D0E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A375A0AB-FF97-442E-9414-B836C1806D0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A375A0AB-FF97-442E-9414-B836C1806D0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A375A0AB-FF97-442E-9414-B836C1806D0E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -89,6 +97,7 @@ Global
 		{C4F31E1A-5ED9-41F7-BDDD-9F360AF4C310} = {8921173B-709E-4670-8347-4187880A0DFE}
 		{C29C22E7-8356-470E-8267-9E7DCBDBDE75} = {3B51FF25-4C7F-4490-9DF7-CFC18A606F12}
 		{D4573CFC-12AA-4FD3-B8EE-4AA141F82AA9} = {DE2D2766-6D0D-4C5C-976D-C681F71A77CF}
+		{A375A0AB-FF97-442E-9414-B836C1806D0E} = {7BEBA64F-1A51-44C8-83C6-A8CFF3BEB032}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {8ECCEE0E-A751-476A-A531-DCF1C0BFC978}
