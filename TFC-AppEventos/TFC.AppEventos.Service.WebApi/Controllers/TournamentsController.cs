@@ -45,6 +45,20 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
             }
         }
 
+        [HttpPost("participar-en-torneo")]
+        public async Task<ActionResult> ParticiparEnTorneo([FromBody] ParticipantesDTO participantesDTO)
+        {
+            AñadirParticipanteResponse añadirParticipanteResponse = await _tournamentsApplication.ParticiparEnTorneo(participantesDTO);
+            if (añadirParticipanteResponse.IsSuccess)
+            {
+                return Ok(añadirParticipanteResponse.Message);
+            }
+            else
+            {
+                return BadRequest(añadirParticipanteResponse.Message);
+            }
+        }
+
         /// <summary>
         /// Crea un nuevo torneo (Requiere rol Organizer o Admin)
         /// </summary>
@@ -103,6 +117,21 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
             else
             {
                 return Ok(response.Participants);
+            }
+        }
+
+        [HttpGet("{tournamentId}/participants-para-pelear")]
+        public async Task<ActionResult<List<ParticipantesDTO>>> GetParticipantesParaPelear(int tournamentId)
+        {
+            ObtenerParticipantesResponse response = await _tournamentsApplication.GetParticipantesParaPelear(tournamentId);
+
+            if (response.IsSuccess)
+            {
+                return Ok(response.Participantes);
+            }
+            else
+            {
+                return Ok(response.Participantes);
             }
         }
     }

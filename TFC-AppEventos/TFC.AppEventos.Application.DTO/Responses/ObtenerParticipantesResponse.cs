@@ -7,9 +7,8 @@ using TFC.AppEventos.Transversal.Utils;
 
 namespace TFC.AppEventos.Application.DTO.Responses
 {
-    public class OrganizarPeleaResponse : BaseResponse
+    public class ObtenerParticipantesResponse : BaseResponse
     {
-        public string NombrePeleador1 { get; set; }
-        public string NombrePeleador2 { get; set; }
+        public List<ParticipantesDTO> Participantes { get; set; } = new List<ParticipantesDTO>();
     }
 }

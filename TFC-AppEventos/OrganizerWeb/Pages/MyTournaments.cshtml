@@ -1,0 +1,56 @@
+﻿@page
+@model OrganizerWeb.Pages.MyTournamentsModel
+@{
+}
+
+<h2>Mis Torneos</h2>
+
+<style>
+    .tournament-card {
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 16px;
+        margin-bottom: 16px;
+        box-shadow: 2px 2px 8px #eee;
+        background: #fafafa;
+        max-width: 500px;
+        cursor: pointer;
+        text-decoration: none;
+        color: inherit;
+        display: block;
+        transition: box-shadow 0.2s;
+    }
+
+        .tournament-card:hover {
+            box-shadow: 4px 4px 16px #bbb;
+            background: #f0f8ff;
+        }
+
+    .tournament-title {
+        font-size: 1.2em;
+        font-weight: bold;
+        margin-bottom: 8px;
+    }
+
+    .tournament-detail {
+        margin-bottom: 4px;
+    }
+</style>
+
+@if (Model.Tournaments != null && Model.Tournaments.Count > 0)
+{
+    @foreach (var torneo in Model.Tournaments)
+    {
+        <a asp-page="/OrganizeFights" asp-route-tournamentId="@torneo.TournamentId" class="tournament-card">
+            <div class="tournament-title">@torneo.location</div>
+            <div class="tournament-detail"><strong>Arena:</strong> @torneo.Arena</div>
+            <div class="tournament-detail"><strong>Deporte:</strong> @torneo.SportType</div>
+            <div class="tournament-detail"><strong>Fecha de inicio:</strong> @torneo.StartDate</div>
+            <div class="tournament-detail"><strong>Fecha de fin:</strong> @torneo.EndDate</div>
+        </a>
+    }
+}
+else
+{
+    <p>No tienes torneos registrados.</p>
+}

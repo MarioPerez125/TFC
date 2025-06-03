@@ -21,6 +21,11 @@ namespace TFC.AppEventos.Application.Main
             _fightersRepository = fightersRepository;
         }
 
+        public Task<FightersDTO> GetFighterById(int user1Id)
+        {
+            return _fightersRepository.GetFighterById(user1Id);
+        }
+
         public async Task<GetFighterInfoResponse> GetFighterInfo(int userId)
         {
             GetFighterInfoResponse response = new GetFighterInfoResponse();

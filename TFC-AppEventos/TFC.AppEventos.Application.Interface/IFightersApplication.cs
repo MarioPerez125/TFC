@@ -10,6 +10,7 @@ namespace TFC.AppEventos.Application.Interface
 {
     public interface IFightersApplication
     {
+        Task<FightersDTO> GetFighterById(int user1Id);
         Task<GetFighterInfoResponse> GetFighterInfo(int userId);
         Task<GetUserFighterInfoListResponse> GetFighterList();
         Task<GetMyTournamentsAsFighterResponse> GetMyTournamentsAsFighter(int userId);

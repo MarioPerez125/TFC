@@ -1,3 +1,12 @@
+using Microsoft.EntityFrameworkCore;
+using TFC.AppEventos.Application.Interface;
+using TFC.AppEventos.Application.Main;
+using TFC.AppEventos.Database.Context;
+using TFC.AppEventos.Infraestructure.Interface;
+using TFC.AppEventos.Infraestructure.Interface.IAuthRepository;
+using TFC.AppEventos.Infraestructure.Repository;
+using TFC.AppEventos.Infraestructure.Repository.AuthRepository;
+
 namespace OrganizerWeb
 {
     public class Program
@@ -10,13 +19,24 @@ namespace OrganizerWeb
             builder.Services.AddRazorPages();
             builder.Services.AddHttpClient("ApiEventos", client =>
             {
-                client.BaseAddress = new Uri("https://localhost:5263/");
+                client.BaseAddress = new Uri("http://localhost:5263/");
             });
 
+            builder.Services.AddScoped<IAuthApplication, AuthApplication>();
+            builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+            builder.Services.AddScoped<IFightersApplication, FightersApplication>();
+            builder.Services.AddScoped<IFightersRepository, FightersRepository>();
+            builder.Services.AddScoped<ITournamentApplication, TournamentApplication>();
+            builder.Services.AddScoped<ITournamentRepository, TournamentRepository>();
+            builder.Services.AddScoped<IFightApplication, FightApplication>();
+            builder.Services.AddScoped<IFightRepository, FightRepository>();
 
-            var app = builder.Build();
+
+            builder.Services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("SQLServerConnection")));
 
             // Configure the HTTP request pipeline.
+            var app = builder.Build();
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Error");

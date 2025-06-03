@@ -37,16 +37,22 @@ namespace TFC.AppEventos.Infraestructure.Repository
                 {
                     fights.ForEach(f =>
                     {
+                        Fighter fighter = _context.Fighters.FirstOrDefault(fighter => fighter.FighterId == f.Fighter1Id);
+                        Fighter fighter2 = _context.Fighters.FirstOrDefault(fighter => fighter.FighterId == f.Fighter2Id);
+
+                        User user1 = _context.Users.FirstOrDefault(u => u.UserId == fighter.UserId);
+                        User user2 = _context.Users.FirstOrDefault(u => u.UserId == fighter2.UserId);
+
                         response.Fights.Add(new FightDto
                         {
                             FightId = f.FightId,
                             Fighter1Id = f.Fighter1Id,
                             Fighter2Id = f.Fighter2Id,
-                            ScheduledTime = f.ScheduledTime,
                             TournamentId = f.TournamentId,
                             Status = f.Status,
-                            WinnerId = f.WinnerId
-
+                            WinnerId = f.WinnerId,
+                            NombrePeleador1 = user1.Name + " " + user1.LastName,
+                            NombrePeleador2 = user2.Name + " " + user2.LastName
                         });
                     });
 
@@ -84,7 +90,6 @@ namespace TFC.AppEventos.Infraestructure.Repository
                         FightId = f.FightId,
                         Fighter1Id = f.Fighter1Id,
                         Fighter2Id = f.Fighter2Id,
-                        ScheduledTime = f.ScheduledTime,
                         TournamentId = f.TournamentId,
                         Status = f.Status,
                         WinnerId = f.WinnerId
@@ -112,9 +117,19 @@ namespace TFC.AppEventos.Infraestructure.Repository
                 {
                     Fighter1Id = fightDto.Fighter1Id,
                     Fighter2Id = fightDto.Fighter2Id,
-                    ScheduledTime = fightDto.ScheduledTime,
                     TournamentId = fightDto.TournamentId,
                 };
+                Fighter? fighter1 = await _context.Fighters.FirstOrDefaultAsync(f => f.FighterId == fightDto.Fighter1Id);
+                Fighter? fighter2 = await _context.Fighters.FirstOrDefaultAsync(f => f.FighterId == fightDto.Fighter2Id);
+
+                if (fighter1 == null || fighter2 == null)
+                {
+                    User? user1 = await _context.Users.FirstOrDefaultAsync(u => u.UserId == fighter1.UserId);
+                    User? user2 = await _context.Users.FirstOrDefaultAsync(u => u.UserId == fighter2.UserId);
+                    response.NombrePeleador1 = user1.Name + " " + user1.LastName;
+                    response.NombrePeleador2 = user2.Name + " " + user2.LastName;
+                }
+                
                 await _context.Fights.AddAsync(fight);
                 await _context.SaveChangesAsync();
                 response.IsSuccess = true;
@@ -164,7 +179,6 @@ namespace TFC.AppEventos.Infraestructure.Repository
                 await _context.SaveChangesAsync();
                 return new { IsSuccess = true, Message = "Winner set successfully." };
             }
-
         }
     }
 }

@@ -4,7 +4,7 @@ namespace TFC.AppEventos.Domain.Entities
 {
     public class User
     {
-        public int? UserId { get; set; }
+        public int UserId { get; set; }
         public string? Name { get; set; }
         public string? LastName { get; set; }
         public int? Phone { get; set; }

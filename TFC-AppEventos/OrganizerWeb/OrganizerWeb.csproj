@@ -6,4 +6,16 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\TFC.AppEventos.Application.DTO\TFC.AppEventos.Application.DTO.csproj" />
+    <ProjectReference Include="..\TFC.AppEventos.Application.Interface\TFC.AppEventos.Application.Interface.csproj" />
+    <ProjectReference Include="..\TFC.AppEventos.Application.Main\TFC.AppEventos.Application.Main.csproj" />
+    <ProjectReference Include="..\TFC.AppEventos.Database.Context\TFC.AppEventos.Database.Context.csproj" />
+    <ProjectReference Include="..\TFC.AppEventos.Domain.Entities\TFC.AppEventos.Domain.Entities.csproj" />
+    <ProjectReference Include="..\TFC.AppEventos.Infraestructure.Interface\TFC.AppEventos.Infraestructure.Interface.csproj" />
+    <ProjectReference Include="..\TFC.AppEventos.Interface.Repository\TFC.AppEventos.Infraestructure.Repository.csproj" />
+    <ProjectReference Include="..\TFC.AppEventos.Service.WebApi\TFC.AppEventos.Service.WebApi.csproj" />
+    <ProjectReference Include="..\TFC.AppEventos.Transversal.Utils\TFC.AppEventos.Transversal.Utils.csproj" />
+  </ItemGroup>
+
 </Project>

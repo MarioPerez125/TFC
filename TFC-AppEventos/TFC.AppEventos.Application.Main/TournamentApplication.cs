@@ -53,6 +53,25 @@ namespace TFC.AppEventos.Application.Main
             return await _tournamentRepository.GetAllTournaments();
         }
 
+        public async Task<ObtenerParticipantesResponse> GetParticipantesParaPelear(int tournamentId)
+        {
+            ObtenerParticipantesResponse response = new ObtenerParticipantesResponse();
+            try
+            {
+                if (tournamentId <= 0)
+                {
+                    throw new Exception("El ID del torneo no puede ser menor o igual a cero");
+                }
+                return await _tournamentRepository.GetParticipantesParaPelear(tournamentId);
+            }
+            catch (Exception e)
+            {
+                response.IsSuccess = false;
+                response.Message = "Error al obtener los participantes para pelear: " + e.Message;
+                return response;
+            }
+        }
+
         public async Task<GetAllParticipantsResponse> GetParticipants(int tournamentId)
         {
             GetAllParticipantsResponse response = new GetAllParticipantsResponse();
@@ -70,6 +89,11 @@ namespace TFC.AppEventos.Application.Main
                 response.Message = "Error al obtener los participantes: " + e.Message;
                 return response;
             }
+        }
+
+        public Task<TournamentDto> GetTournamentById(int tournamentId)
+        {
+            return _tournamentRepository.GetTournamentById(tournamentId);
         }
 
         public async Task<GetTournamentResponse> GetTournamentByName(string name)
@@ -91,6 +115,46 @@ namespace TFC.AppEventos.Application.Main
             {
                 response.IsSuccess = false;
                 response.Message = "Error al obtener el torneo: " + e.Message;
+                return response;
+            }
+        }
+
+        public Task<GetTournamentResponse> GetTournamentByOrganizerId(int name)
+        {
+            GetTournamentResponse response = new GetTournamentResponse();
+            try
+            {
+                if (name <= 0)
+                {
+                    throw new Exception("El ID del organizador no puede ser menor o igual a cero");
+                }
+                return _tournamentRepository.GetTournamentByOrganizerId(name);
+
+            }
+            catch (Exception e)
+            {
+                response.IsSuccess = false;
+                response.Message = "Error al obtener el torneo por ID del organizador: " + e.Message;
+                return Task.FromResult(response);
+            }
+        }
+
+        public async Task<AñadirParticipanteResponse> ParticiparEnTorneo(ParticipantesDTO participantesDTO)
+        {
+            AñadirParticipanteResponse response = new AñadirParticipanteResponse();
+            try
+            {
+                if (participantesDTO == null)
+                {
+                    throw new Exception("Los datos del participante no pueden ser nulos");
+                }
+
+                return await _tournamentRepository.ParticiparEnTorneo(participantesDTO);
+            }
+            catch (Exception e)
+            {
+                response.IsSuccess = false;
+                response.Message = "Error al participar en el torneo: " + e.Message;
                 return response;
             }
         }

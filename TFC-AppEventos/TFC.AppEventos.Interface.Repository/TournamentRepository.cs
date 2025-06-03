@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -79,6 +80,30 @@ namespace TFC.AppEventos.Infraestructure.Repository
             return tournaments;
         }
 
+        public async Task<ObtenerParticipantesResponse> GetParticipantesParaPelear(int tournamentId)
+        {
+            ObtenerParticipantesResponse response = new ObtenerParticipantesResponse();
+            try
+            {
+                response.Participantes = await _context.Participantes
+                    .Where(p => p.TournamentId == tournamentId)
+                    .Select(p => new ParticipantesDTO
+                    {
+                        TournamentId = p.TournamentId,
+                        UserId = p.UserId
+                    })
+                    .ToListAsync();
+                response.IsSuccess = true;
+                response.Message = "Participantes obtenidos correctamente";
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+                response.Message = $"Error al obtener los participantes: {ex.Message}";
+            }
+            return response;
+        }
+
         public async Task<GetAllParticipantsResponse> GetParticipants(int tournamentId)
         {
             var response = new GetAllParticipantsResponse();
@@ -126,6 +151,22 @@ namespace TFC.AppEventos.Infraestructure.Repository
             return response;
         }
 
+        public Task<TournamentDto> GetTournamentById(int tournamentId)
+        {
+            return _context.Tournaments
+                .Where(t => t.TournamentId == tournamentId)
+                .Select(t => new TournamentDto
+                {
+                    TournamentId = t.TournamentId,
+                    location = t.Name,
+                    Arena = t.Arena,
+                    StartDate = t.StartDate,
+                    EndDate = t.EndDate,
+                    SportType = t.SportType,
+                    OrganizerId = t.OrganizerId
+                })
+                .FirstOrDefaultAsync();
+        }
 
         public async Task<GetTournamentResponse> GetTournamentByName(string name)
         {
@@ -161,6 +202,64 @@ namespace TFC.AppEventos.Infraestructure.Repository
                 response.Message = "No se encontró el torneo";
             }
 
+            return response;
+        }
+
+        public async Task<GetTournamentResponse> GetTournamentByOrganizerId(int id)
+        {
+           GetTournamentResponse getTournamentResponse = new GetTournamentResponse
+            {
+                Tournament = new List<TournamentDto>() // Initialize the list to avoid null reference
+            };
+            IEnumerable<Tournament>? tournament = _context.Tournaments.Where(x => x.OrganizerId == id).ToList();
+            if (tournament != null && tournament.Any()) // Check if the collection is not null and has elements
+            {
+                foreach (var item in tournament)
+                {
+                    getTournamentResponse.Tournament.Add(new TournamentDto
+                    {
+                        TournamentId = item.TournamentId,
+                        location = item.Name,
+                        Arena = item.Arena, // Assuming Arena is part of the TournamentDto
+                        StartDate = item.StartDate,
+                        EndDate = item.EndDate,
+                        SportType = item.SportType,
+                        OrganizerId = item.OrganizerId
+                    });
+                }
+                getTournamentResponse.IsSuccess = true;
+                getTournamentResponse.Message = "Torneo encontrado correctamente";
+            }
+            else
+            {
+                getTournamentResponse.IsSuccess = false;
+                getTournamentResponse.Message = "No se encontró el torneo";
+            }
+            return getTournamentResponse;
+        }
+
+        public async Task<AñadirParticipanteResponse> ParticiparEnTorneo(ParticipantesDTO participantesDTO)
+        {
+            IDbContextTransaction dbContextTransaction = _context.Database.BeginTransaction();
+            AñadirParticipanteResponse response = new AñadirParticipanteResponse();
+            try
+            {
+                await _context.Participantes.AddAsync(new Participantes
+                {
+                    TournamentId = participantesDTO.TournamentId,
+                    UserId = participantesDTO.UserId,
+                });
+                await _context.SaveChangesAsync();
+                response.IsSuccess = true;
+                response.Message = "Participante añadido correctamente";
+                dbContextTransaction.Commit();
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+                response.Message = $"Error al añadir participante: {ex.Message}";
+                dbContextTransaction.Rollback();
+            }
             return response;
         }
     }

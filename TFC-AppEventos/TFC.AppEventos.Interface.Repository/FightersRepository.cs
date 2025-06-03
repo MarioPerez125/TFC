@@ -22,6 +22,22 @@ namespace TFC.AppEventos.Infraestructure.Repository
             _context = context;
         }
 
+        public async Task<FightersDTO> GetFighterById(int user1Id)
+        {
+            FightersDTO fighterDto = new FightersDTO();
+            Fighter? fighter = _context.Fighters.FirstOrDefault(f => f.UserId == user1Id);
+            fighterDto.UserId = fighter.UserId;
+            fighterDto.FighterId = fighter.FighterId;
+            fighterDto.Wins = fighter.Wins;
+            fighterDto.Losses = fighter.Losses;
+            fighterDto.Draws = fighter.Draws;
+            fighterDto.WeightClass = fighter.WeightClass;
+            fighterDto.Height = fighter.Height;
+            fighterDto.Reach = fighter.Reach;
+            return fighterDto;
+
+        }
+
         public async Task<GetFighterInfoResponse> GetFighterInfo(int userId)
         {
             GetFighterInfoResponse response = new GetFighterInfoResponse();
@@ -37,11 +53,19 @@ namespace TFC.AppEventos.Infraestructure.Repository
                         UserId = user.UserId,
                         Username = user.Username,
                         Email = user.Email,
+                        Name = user.Name,
+                        LastName = user.LastName,
+                        Phone = user.Phone,
+                        BirthDate = user.BirthDate,
+                        City = user.City,
+                        Country = user.Country,
+
                         Role = user.Role
                     };
                     response.FighterInfo.Fighter = new FightersDTO
                     {
                         UserId = fighter.UserId,
+                        FighterId = fighter.FighterId,
                         Wins = fighter.Wins,
                         Losses = fighter.Losses,
                         Draws = fighter.Draws,

@@ -1,0 +1,53 @@
+﻿@page "{tournamentId:int}"
+@model OrganizerWeb.Pages.OrganizeFightsModel
+@{
+    ViewData["Title"] = "Organizar Peleas";
+}
+
+<h2>Organizar Peleas - @Model.TournamentName</h2>
+
+@if (Model.ErrorMessage != null)
+{
+    <div style="color: #a00; margin-bottom: 16px;">@Model.ErrorMessage</div>
+}
+
+<form method="post" style="margin-bottom: 24px;">
+    <input type="hidden" asp-for="TournamentId" />
+    <div style="margin-bottom: 10px;">
+        <label for="fighter1">Peleador 1:</label>
+        <select asp-for="SelectedFighter1Id" asp-items="Model.FightersSelectList" id="fighter1"></select>
+    </div>
+    <div style="margin-bottom: 10px;">
+        <label for="fighter2">Peleador 2:</label>
+        <select asp-for="SelectedFighter2Id" asp-items="Model.FightersSelectList" id="fighter2"></select>
+    </div>
+    <button type="submit">Agregar Pelea</button>
+</form>
+
+<h3>Peleas Existentes</h3>
+@if (Model.Fights != null && Model.Fights.Count > 0)
+{
+    <div style="background: #fafbfc; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 20px; max-width: 500px;">
+        <table style="width:100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: #e3e8ee;">
+                    <th style="padding: 10px; border-bottom: 2px solid #d1d5db; text-align: left;">Peleador 1</th>
+                    <th style="padding: 10px; border-bottom: 2px solid #d1d5db; text-align: left;">Peleador 2</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var fight in Model.Fights)
+                {
+                    <tr style="border-bottom: 1px solid #f0f0f0;">
+                        <td style="padding: 8px 10px;">@fight.Fighter1Name</td>
+                        <td style="padding: 8px 10px;">@fight.Fighter2Name</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <p style="color: #666; font-style: italic;">No hay peleas registradas para este torneo.</p>
+}
