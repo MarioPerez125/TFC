@@ -13,6 +13,8 @@ namespace TFC.AppEventos.Application.Interface
         Task<GetFightsByTournamentResponse> GetFightsByTournament(int tournamentId);
         Task<GetMyFightsResponse> GetMyFights(int userId);
         Task<OrganizarPeleaResponse> ScheduleFight(FightDto fightDto);
+        Task<OrganizarPeleaResponse> CancelFight(int id);
+
         Task<object?> SetAWinner(FightResultDto resultDto);
     }
 }

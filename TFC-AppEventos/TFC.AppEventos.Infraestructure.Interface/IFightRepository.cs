@@ -10,6 +10,7 @@ namespace TFC.AppEventos.Infraestructure.Interface
 {
     public interface IFightRepository
     {
+        Task<OrganizarPeleaResponse> CancelFight(int id);
         Task<GetFightsByTournamentResponse> GetFightsByTournament(int tournamentId);
         Task<GetMyFightsResponse> GetMyFights(int userId);
         Task<OrganizarPeleaResponse> ScheduleFight(FightDto fightDto);

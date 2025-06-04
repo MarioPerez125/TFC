@@ -18,6 +18,11 @@ namespace TFC.AppEventos.Application.Main
             _fightRepository = fightRepository;
         }
 
+        public async Task<OrganizarPeleaResponse> CancelFight(int id)
+        {
+            return await _fightRepository.CancelFight(id);
+        }
+
         public async Task<GetFightsByTournamentResponse> GetFightsByTournament(int tournamentId)
         {
             GetFightsByTournamentResponse response = new GetFightsByTournamentResponse();

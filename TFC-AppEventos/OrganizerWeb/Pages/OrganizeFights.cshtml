@@ -15,11 +15,15 @@
     <input type="hidden" asp-for="TournamentId" />
     <div style="margin-bottom: 10px;">
         <label for="fighter1">Peleador 1:</label>
-        <select asp-for="SelectedFighter1Id" asp-items="Model.FightersSelectList" id="fighter1"></select>
+        <select asp-for="SelectedFighter1Id" asp-items="Model.FightersSelectList" id="fighter1">
+            <option value="">-- Selecciona un peleador --</option>
+        </select>
     </div>
     <div style="margin-bottom: 10px;">
         <label for="fighter2">Peleador 2:</label>
-        <select asp-for="SelectedFighter2Id" asp-items="Model.FightersSelectList" id="fighter2"></select>
+        <select asp-for="SelectedFighter2Id" asp-items="Model.FightersSelectList" id="fighter2">
+            <option value="">-- Selecciona un peleador --</option>
+        </select>
     </div>
     <button type="submit">Agregar Pelea</button>
 </form>
@@ -27,12 +31,16 @@
 <h3>Peleas Existentes</h3>
 @if (Model.Fights != null && Model.Fights.Count > 0)
 {
-    <div style="background: #fafbfc; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 20px; max-width: 500px;">
+    <div style="background: #fafbfc; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); padding: 20px; max-width: 800px;">
         <table style="width:100%; border-collapse: collapse;">
             <thead>
                 <tr style="background: #e3e8ee;">
-                    <th style="padding: 10px; border-bottom: 2px solid #d1d5db; text-align: left;">Peleador 1</th>
-                    <th style="padding: 10px; border-bottom: 2px solid #d1d5db; text-align: left;">Peleador 2</th>
+                    <th style="padding: 10px;">Peleador 1</th>
+                    <th style="padding: 10px;">Peleador 2</th>
+                    <th style="padding: 10px;">Estado</th>
+                    <th style="padding: 10px;">Ganador</th>
+                    <th style="padding: 10px;">Resultado</th>
+                    <th style="padding: 10px;">Acciones</th>
                 </tr>
             </thead>
             <tbody>
@@ -41,6 +49,49 @@
                     <tr style="border-bottom: 1px solid #f0f0f0;">
                         <td style="padding: 8px 10px;">@fight.Fighter1Name</td>
                         <td style="padding: 8px 10px;">@fight.Fighter2Name</td>
+                        <td style="padding: 8px 10px;">@fight.Status</td>
+                        <td style="padding: 8px 10px;">@fight.WinnerName</td>
+                        <td style="padding: 8px 10px;">
+                            @if (!string.Equals(fight.Status, "Completed", StringComparison.OrdinalIgnoreCase))
+                            {
+                                <form method="post" asp-page-handler="SetResult" style="display: flex; gap: 4px; align-items: center;">
+                                    <input type="hidden" name="FightResult.FightId" value="@fight.FightId" />
+                                    <select name="FightResult.WinnerId" required>
+                                        <option value="">Ganador</option>
+                                        <option value="@fight.Fighter1Id">@fight.Fighter1Name</option>
+                                        <option value="@fight.Fighter2Id">@fight.Fighter2Name</option>
+                                    </select>
+                                    <select name="FightResult.LooserId" required>
+                                        <option value="">Perdedor</option>
+                                        <option value="@fight.Fighter1Id">@fight.Fighter1Name</option>
+                                        <option value="@fight.Fighter2Id">@fight.Fighter2Name</option>
+                                    </select>
+                                    <select name="FightResult.Method" required>
+                                        <option value="">Método</option>
+                                        <option value="KO">KO</option>
+                                        <option value="TKO">TKO</option>
+                                        <option value="Submission">Sumisión</option>
+                                        <option value="Decision">Decisión</option>
+                                    </select>
+                                    <input type="text" name="FightResult.Duration" pattern="^([0-5][0-9]):([0-5][0-9])$" maxlength="5" required placeholder="mm:ss" style="width:70px;" title="Formato mm:ss, máximo 05:59" />
+                                    <button type="submit">Guardar</button>
+                                </form>
+                            }
+                            else
+                            {
+                                <span style="color: #888;">Pelea finalizada</span>
+                            }
+                        </td>
+                        <td style="padding: 8px 10px;">
+                            @if (!string.Equals(fight.Status, "Completed", StringComparison.OrdinalIgnoreCase))
+                            {
+                                <form method="post" asp-page-handler="CancelFight" asp-route-fightId="@fight.FightId" style="display:inline;">
+                                    <button type="submit" onclick="return confirm('¿Seguro que deseas cancelar esta pelea?');" style="background:#e74c3c;color:#fff;border:none;padding:4px 10px;border-radius:4px;cursor:pointer;">
+                                        Cancelar
+                                    </button>
+                                </form>
+                            }
+                        </td>
                     </tr>
                 }
             </tbody>

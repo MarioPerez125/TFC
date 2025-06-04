@@ -1,8 +1,41 @@
-﻿@page
+﻿@page "{organizerId:int}"
 @model OrganizerWeb.Pages.MyTournamentsModel
 @{
 }
 
+
+<!-- Formulario para crear un nuevo torneo -->
+<form method="post" asp-page-handler="CreateTournament" style="margin-bottom: 32px; max-width: 500px;">
+    <div>
+        <label for="location">Ubicación:</label>
+        <input type="text" id="location" name="Tournament.location" required class="form-control" />
+    </div>
+    <div>
+        <label for="Arena">Arena:</label>
+        <input type="text" id="Arena" name="Tournament.Arena" required class="form-control" />
+    </div>
+    <div>
+        <label for="StartDate">Fecha y hora de inicio:</label>
+        <input type="datetime-local" id="StartDate" name="Tournament.StartDate" required class="form-control" />
+    </div>
+    <div>
+        <label for="EndDate">Fecha y hora de fin:</label>
+        <input type="datetime-local" id="EndDate" name="Tournament.EndDate" required class="form-control" />
+    </div>
+    <div>
+        <label for="SportType">Deporte:</label>
+        <input type="text" id="SportType" name="Tournament.SportType" required class="form-control" />
+    </div>
+    <br />
+    <button type="submit">Crear Torneo</button>
+</form>
+
+@if (!string.IsNullOrEmpty(Model.CreateTournamentMessage))
+{
+    <div style="color: @(Model.CreateTournamentSuccess ? "green" : "red"); margin-bottom: 16px;">
+        @Model.CreateTournamentMessage
+    </div>
+}
 <h2>Mis Torneos</h2>
 
 <style>
@@ -53,4 +86,17 @@
 else
 {
     <p>No tienes torneos registrados.</p>
+}
+
+@section Scripts {
+<script>
+document.querySelector('form[asp-page-handler="CreateTournament"]').addEventListener('submit', function (e) {
+    const start = document.getElementById('StartDate').value;
+    const end = document.getElementById('EndDate').value;
+    if (start && end && end <= start) {
+        alert('La fecha y hora de fin debe ser posterior a la de inicio.');
+        e.preventDefault();
+    }
+});
+</script>
 }

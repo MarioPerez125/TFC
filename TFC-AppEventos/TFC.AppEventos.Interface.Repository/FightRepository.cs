@@ -20,18 +20,55 @@ namespace TFC.AppEventos.Infraestructure.Repository
             _context = context;
         }
 
+        public async Task<OrganizarPeleaResponse> CancelFight(int id)
+        {
+            OrganizarPeleaResponse organizarPeleaResponse = new OrganizarPeleaResponse();
+            try
+            {
+                var fight = await _context.Fights.FindAsync(id);
+                if (fight == null)
+                {
+                    organizarPeleaResponse.IsSuccess = false;
+                    organizarPeleaResponse.Message = "Pelea no encontrada";
+                    return organizarPeleaResponse;
+                }
+
+                // Solo permite borrar si NO está finalizada
+                if (string.Equals(fight.Status, "Completed", StringComparison.OrdinalIgnoreCase))
+                {
+                    organizarPeleaResponse.IsSuccess = false;
+                    organizarPeleaResponse.Message = "No se puede cancelar una pelea finalizada.";
+                    return organizarPeleaResponse;
+                }
+
+                _context.Fights.Remove(fight);
+                await _context.SaveChangesAsync();
+
+                organizarPeleaResponse.IsSuccess = true;
+                organizarPeleaResponse.Message = "Pelea cancelada exitosamente";
+            }
+            catch (Exception ex)
+            {
+                organizarPeleaResponse.IsSuccess = false;
+                organizarPeleaResponse.Message = $"Error al cancelar la pelea: {ex.Message}";
+            }
+            return organizarPeleaResponse;
+        }
+
         public async Task<GetFightsByTournamentResponse> GetFightsByTournament(int tournamentId)
         {
             GetFightsByTournamentResponse response = new GetFightsByTournamentResponse();
             try
             {
-
                 List<Fight> fights = await _context.Fights
                     .Where(f => f.TournamentId == tournamentId).ToListAsync();
 
                 if (fights == null || fights.Count == 0)
                 {
-                    throw new Exception("No fights found for the specified tournament.");
+                    response.Fights = new List<FightDto>();
+                    response.IsSuccess = true;
+                    response.Message = "No hay peleas registradas para este torneo.";
+                    return response;
                 }
                 else
                 {
@@ -64,7 +101,6 @@ namespace TFC.AppEventos.Infraestructure.Repository
             {
                 response.IsSuccess = false;
                 response.Message = "Error retrieving fights: " + ex.Message;
-
             }
             return response;
         }
@@ -112,35 +148,33 @@ namespace TFC.AppEventos.Infraestructure.Repository
 
             try
             {
+                Fighter? fighter1 = await _context.Fighters.FirstOrDefaultAsync(f => f.FighterId == fightDto.Fighter1Id);
+                Fighter? fighter2 = await _context.Fighters.FirstOrDefaultAsync(f => f.FighterId == fightDto.Fighter2Id);
+
+                if (fighter1 == null || fighter2 == null)
+                {
+                    response.IsSuccess = false;
+                    response.Message = "No se encontró uno o ambos peleadores para crear la pelea.";
+                    return response;
+                }
 
                 Fight fight = new Fight
                 {
                     Fighter1Id = fightDto.Fighter1Id,
                     Fighter2Id = fightDto.Fighter2Id,
                     TournamentId = fightDto.TournamentId,
+                    Status = "ONGOING"
                 };
-                Fighter? fighter1 = await _context.Fighters.FirstOrDefaultAsync(f => f.FighterId == fightDto.Fighter1Id);
-                Fighter? fighter2 = await _context.Fighters.FirstOrDefaultAsync(f => f.FighterId == fightDto.Fighter2Id);
 
-                if (fighter1 == null || fighter2 == null)
-                {
-                    User? user1 = await _context.Users.FirstOrDefaultAsync(u => u.UserId == fighter1.UserId);
-                    User? user2 = await _context.Users.FirstOrDefaultAsync(u => u.UserId == fighter2.UserId);
-                    response.NombrePeleador1 = user1.Name + " " + user1.LastName;
-                    response.NombrePeleador2 = user2.Name + " " + user2.LastName;
-                }
-                
                 await _context.Fights.AddAsync(fight);
                 await _context.SaveChangesAsync();
                 response.IsSuccess = true;
                 response.Message = "Fight scheduled successfully.";
-
             }
             catch (Exception ex)
             {
                 response.IsSuccess = false;
                 response.Message = "Error scheduling fight: " + ex.Message;
-
             }
             return response;
         }
@@ -148,6 +182,7 @@ namespace TFC.AppEventos.Infraestructure.Repository
         public async Task<object?> SetAWinner(FightResultDto resultDto)
         {
             Fight? fight = await _context.Fights.FirstOrDefaultAsync(f => f.FightId == resultDto.FightId);
+            fight.Status = "FINISHED";
             if (fight == null)
             {
                 return new { IsSuccess = false, Message = "Fight not found." };
