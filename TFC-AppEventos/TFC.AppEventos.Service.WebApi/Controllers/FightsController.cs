@@ -93,5 +93,20 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
         //public async Task<IActionResult> Cancel(int id)
         //{
         //}
+
+        [HttpGet("by-tournament/{tournamentId}")]
+        public async Task<ActionResult<GetFightsByTournamentResponse>> GetFightsByTournament(int tournamentId)
+        {
+            return await _fightApplication.GetFightsByTournament(tournamentId);
+        }
+
+        [HttpDelete("{fightId}")]
+        public async Task<ActionResult<OrganizarPeleaResponse>> CancelFight(int fightId)
+        {
+            var result = await _fightApplication.CancelFight(fightId);
+            if (result.IsSuccess)
+                return Ok(result);
+            return BadRequest(result);
+        }
     }
 }

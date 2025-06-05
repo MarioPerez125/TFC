@@ -104,7 +104,7 @@ namespace TFC.AppEventos.Infraestructure.Repository
             return response;
         }
 
-        public async Task<GetAllParticipantsResponse> GetParticipants(int tournamentId)
+        public async Task<GetAllParticipantsResponse> GetPeleadores(int tournamentId)
         {
             var response = new GetAllParticipantsResponse();
             try
@@ -141,12 +141,12 @@ namespace TFC.AppEventos.Infraestructure.Repository
                     .ToList();
 
                 response.IsSuccess = true;
-                response.Message = "Participantes obtenidos correctamente";
+                response.Message = "Peleadores obtenidos correctamente";
             }
             catch (Exception ex)
             {
                 response.IsSuccess = false;
-                response.Message = $"Error al obtener los participantes: {ex.Message}";
+                response.Message = $"Error al obtener los Peleadores: {ex.Message}";
             }
             return response;
         }

@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
-using TFC.AppEventos.Application.Interface;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Threading.Tasks;
+using System.Collections.Generic;
 using TFC.AppEventos.Application.DTO;
 using TFC.AppEventos.Application.DTO.Responses;
 
@@ -8,15 +11,15 @@ namespace OrganizerWeb.Pages
 {
     public class MyTournamentsModel : PageModel
     {
-        private readonly ITournamentApplication _tournamentApplication;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public MyTournamentsModel(ITournamentApplication tournamentApplication)
+        public MyTournamentsModel(IHttpClientFactory httpClientFactory)
         {
-            _tournamentApplication = tournamentApplication;
+            _httpClientFactory = httpClientFactory;
         }
 
         public List<TournamentDto> Tournaments { get; set; } = new();
-        
+
         [BindProperty]
         public int OrganizerId { get; set; }
         [BindProperty]
@@ -24,16 +27,29 @@ namespace OrganizerWeb.Pages
 
         [BindProperty]
         public string CreateTournamentMessage { get; set; }
-        
+
         [BindProperty]
         public bool CreateTournamentSuccess { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int organizerId)
         {
             OrganizerId = organizerId;
-            // Llama al método para obtener los torneos del organizador
-            GetTournamentResponse response = await _tournamentApplication.GetTournamentByOrganizerId(OrganizerId);
-            Tournaments = response.Tournament ?? new List<TournamentDto>();
+            var client = _httpClientFactory.CreateClient("Api");
+            var response = await client.GetAsync($"api/tournaments/organizer/{OrganizerId}");
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<GetTournamentResponse>();
+                Tournaments = result?.Tournament ?? new List<TournamentDto>();
+
+                // Ordenar por fecha de inicio descendente
+                Tournaments = Tournaments
+                    .OrderByDescending(t => DateTime.TryParse(t.StartDate, out var dt) ? dt : DateTime.MinValue)
+                    .ToList();
+            }
+            else
+            {
+                Tournaments = new List<TournamentDto>();
+            }
             return Page();
         }
 
@@ -43,18 +59,15 @@ namespace OrganizerWeb.Pages
             {
                 CreateTournamentSuccess = false;
                 CreateTournamentMessage = "La fecha y hora de fin debe ser posterior a la de inicio.";
-
-                // Recarga la lista de torneos para mostrarla aunque haya error
-                GetTournamentResponse response = await _tournamentApplication.GetTournamentByOrganizerId(OrganizerId);
-                Tournaments = response.Tournament ?? new List<TournamentDto>();
-
-                // Mantén la URL con el parámetro organizerId
+                await OnGetAsync(OrganizerId);
                 return Page();
             }
 
-            var result = await _tournamentApplication.CreateTournament(Tournament, OrganizerId);
+            Tournament.OrganizerId = OrganizerId; // Asegúrate de setear el OrganizerId
+            var client = _httpClientFactory.CreateClient("Api");
+            var response = await client.PostAsJsonAsync("api/tournaments/create-tournament", Tournament);
 
-            if (result.IsSuccess)
+            if (response.IsSuccessStatusCode)
             {
                 CreateTournamentSuccess = true;
                 CreateTournamentMessage = "Torneo creado correctamente.";
@@ -62,16 +75,13 @@ namespace OrganizerWeb.Pages
             }
             else
             {
+                var errorMsg = await response.Content.ReadAsStringAsync();
                 CreateTournamentSuccess = false;
-                CreateTournamentMessage = result.Message ?? "Error al crear el torneo.";
-
-                // Recarga la lista de torneos para mostrarla aunque haya error
-                GetTournamentResponse response = await _tournamentApplication.GetTournamentByOrganizerId(OrganizerId);
-                Tournaments = response.Tournament ?? new List<TournamentDto>();
-
-                // Mantén la URL con el parámetro organizerId
-                return Page();
+                CreateTournamentMessage = $"Error al crear el torneo: {errorMsg}";
             }
+
+            await OnGetAsync(OrganizerId);
+            return Page();
         }
     }
 }

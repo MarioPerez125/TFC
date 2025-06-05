@@ -1,18 +1,20 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using System.Net.Http;
+using System.Net.Http.Json;
+using System.Threading.Tasks;
 using TFC.AppEventos.Application.DTO;
 using TFC.AppEventos.Application.DTO.Responses;
-using TFC.AppEventos.Application.Main;
 
 namespace OrganizerWeb.Pages
 {
     public class IndexModel : PageModel
     {
-        private readonly IAuthApplication _authApplication;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public IndexModel(IAuthApplication authApplication)
+        public IndexModel(IHttpClientFactory httpClientFactory)
         {
-            _authApplication = authApplication;
+            _httpClientFactory = httpClientFactory;
         }
 
         [BindProperty]
@@ -25,30 +27,45 @@ namespace OrganizerWeb.Pages
 
         public async Task<IActionResult> OnPostRegisterAsync()
         {
-            ChangeRoleResponse response = await _authApplication.RegisterAsOrganizer(Auth);
+            var client = _httpClientFactory.CreateClient("Api");
+            var response = await client.PostAsJsonAsync("api/auth/register-as-organizer", Auth);
 
-            if (response.IsSuccess)
-                Result = "Registro exitoso";
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<ChangeRoleResponse>();
+                Result = result?.IsSuccess == true ? "Registro exitoso" : "Error en el registro";
+            }
             else
+            {
                 Result = "Error en el registro";
+            }
 
             return Page();
         }
 
         public async Task<IActionResult> OnPostLoginAsync()
         {
-            LoginResponse response = await _authApplication.Login(Auth);
+            var client = _httpClientFactory.CreateClient("Api");
+            var response = await client.PostAsJsonAsync("api/auth/login", Auth);
 
-            if (response.IsSuccess)
+            if (response.IsSuccessStatusCode)
             {
-                // Redirige a la página de torneos, pasando el UserId como parámetro
-                return RedirectToPage("MyTournaments", new { organizerId = response.User.UserId });
+                var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
+                if (result?.IsSuccess == true)
+                {
+                    return RedirectToPage("MyTournaments", new { organizerId = result.User.UserId });
+                }
+                else
+                {
+                    Result = "Error en el login";
+                }
             }
             else
             {
                 Result = "Error en el login";
-                return Page();
             }
+
+            return Page();
         }
     }
 }

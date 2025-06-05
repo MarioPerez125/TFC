@@ -5,7 +5,8 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Linq;
 using System;
-using TFC.AppEventos.Application.Interface;
+using System.Net.Http;
+using System.Net.Http.Json;
 using TFC.AppEventos.Application.DTO;
 using TFC.AppEventos.Application.DTO.Responses;
 
@@ -31,22 +32,14 @@ namespace OrganizerWeb.Pages
         private Dictionary<int, string> userIdToName = new();
         public string ErrorMessage { get; set; }
 
-        // Para el formulario de resultado de pelea
         [BindProperty]
         public FightResultInput FightResult { get; set; }
 
-        private readonly ITournamentApplication _tournamentApplication;
-        private readonly IFightApplication _fightApplication;
-        private readonly IFightersApplication _fightersApplication;
+        private readonly IHttpClientFactory _httpClientFactory;
 
-        public OrganizeFightsModel(
-            ITournamentApplication tournamentApplication,
-            IFightApplication fightApplication,
-            IFightersApplication fightersApplication)
+        public OrganizeFightsModel(IHttpClientFactory httpClientFactory)
         {
-            _tournamentApplication = tournamentApplication;
-            _fightApplication = fightApplication;
-            _fightersApplication = fightersApplication;
+            _httpClientFactory = httpClientFactory;
         }
 
         public async Task<IActionResult> OnGetAsync(string errorMessage = null)
@@ -71,11 +64,12 @@ namespace OrganizerWeb.Pages
                 return Page();
             }
 
-            var fighter1Info = await _fightersApplication.GetFighterInfo(SelectedFighter1Id);
-            var fighter2Info = await _fightersApplication.GetFighterInfo(SelectedFighter2Id);
+            var client = _httpClientFactory.CreateClient("Api");
+            var fighter1Info = await client.GetFromJsonAsync<FightersDTO>($"api/fighters/user-fighter-info/{SelectedFighter1Id}");
+            var fighter2Info = await client.GetFromJsonAsync<FightersDTO>($"api/fighters/user-fighter-info/{SelectedFighter2Id}");
 
-            var fighter1Id = fighter1Info?.FighterInfo?.Fighter?.FighterId ?? 0;
-            var fighter2Id = fighter2Info?.FighterInfo?.Fighter?.FighterId ?? 0;
+            var fighter1Id = fighter1Info?.FighterId ?? 0;
+            var fighter2Id = fighter2Info?.FighterId ?? 0;
 
             if (fighter1Id == 0 || fighter2Id == 0)
             {
@@ -91,27 +85,27 @@ namespace OrganizerWeb.Pages
                 Fighter2Id = fighter2Id
             };
 
-            var result = await _fightApplication.ScheduleFight(fightDto);
+            var response = await client.PostAsJsonAsync("api/fights/schedule-fight", fightDto);
+            var result = await response.Content.ReadFromJsonAsync<OrganizarPeleaResponse>();
 
             ErrorMessage = result != null && result.IsSuccess ? null : result?.Message ?? "Error al agregar la pelea.";
 
-            // Limpiar selección
             SelectedFighter1Id = 0;
             SelectedFighter2Id = 0;
 
-            // PRG: Redirige para evitar reenvío accidental del formulario
             return RedirectToPage(new { tournamentId = TournamentId, errorMessage = ErrorMessage });
         }
 
         public async Task<IActionResult> OnPostSetResultAsync()
         {
-            if (FightResult == null || FightResult.FightId == 0 || FightResult.WinnerId == null || FightResult.LooserId == null)
+            if (FightResult == null || FightResult.FightId == 0 || FightResult.WinnerId == null)
             {
                 ErrorMessage = "Datos de resultado incompletos.";
                 await LoadDataAsync();
                 return Page();
             }
 
+            var client = _httpClientFactory.CreateClient("Api");
             var resultDto = new FightResultDto
             {
                 FightId = FightResult.FightId,
@@ -121,41 +115,42 @@ namespace OrganizerWeb.Pages
                 Duration = FightResult.Duration
             };
 
-            var response = await _fightApplication.SetAWinner(resultDto);
+            var response = await client.PutAsJsonAsync("api/fights/set-winner", resultDto);
+            var result = await response.Content.ReadFromJsonAsync<OrganizarPeleaResponse>();
 
-            ErrorMessage = response == null ? "Error al guardar el resultado." : null;
+            ErrorMessage = result == null || !result.IsSuccess ? result?.Message ?? "Error al guardar el resultado." : null;
 
-            // PRG: Redirige para evitar reenvío accidental del formulario
             return RedirectToPage(new { tournamentId = TournamentId, errorMessage = ErrorMessage });
         }
 
         public async Task<IActionResult> OnPostCancelFightAsync(int fightId)
         {
-            var result = await _fightApplication.CancelFight(fightId);
-            ErrorMessage = result.IsSuccess ? null : result.Message;
+            var client = _httpClientFactory.CreateClient("Api");
+            var response = await client.DeleteAsync($"api/fights/{fightId}");
+            var result = await response.Content.ReadFromJsonAsync<OrganizarPeleaResponse>();
+            ErrorMessage = result != null && result.IsSuccess ? null : result?.Message;
 
-            // PRG: Redirige para evitar reenvío accidental del formulario
             return RedirectToPage(new { tournamentId = TournamentId, errorMessage = ErrorMessage });
         }
 
         private async Task LoadDataAsync()
         {
             TournamentName = $"Torneo #{TournamentId}";
-
             userIdToName.Clear();
 
-            var participantesResponse = await _tournamentApplication.GetParticipantesParaPelear(TournamentId);
+            var client = _httpClientFactory.CreateClient("Api");
+            var participantesList = await client.GetFromJsonAsync<List<ParticipantesDTO>>(
+                $"api/tournaments/{TournamentId}/participants-para-pelear");
+            var allFighters = await client.GetFromJsonAsync<List<FighterForFriendList>>("api/fighters/user-fighter-list");
 
-            // Todos los peleadores siempre disponibles
             var fightersList = new List<SelectListItem>();
-            if (participantesResponse?.Participantes != null)
+            if (participantesList != null && allFighters != null)
             {
-                foreach (var p in participantesResponse.Participantes)
+                foreach (var p in participantesList)
                 {
-                    var fighterInfo = await _fightersApplication.GetFighterInfo(p.UserId);
-                    var user = fighterInfo?.FighterInfo?.User;
-                    string displayName = (user != null && (!string.IsNullOrWhiteSpace(user.Name) || !string.IsNullOrWhiteSpace(user.LastName)))
-                        ? $"{user.Name} {user.LastName}".Trim()
+                    var fighter = allFighters.FirstOrDefault(f => f.UserId == p.UserId);
+                    string displayName = (fighter != null && (!string.IsNullOrWhiteSpace(fighter.Name) || !string.IsNullOrWhiteSpace(fighter.LastName)))
+                        ? $"{fighter.Name} {fighter.LastName}".Trim()
                         : $"User {p.UserId}";
                     fightersList.Add(new SelectListItem
                     {
@@ -167,9 +162,8 @@ namespace OrganizerWeb.Pages
             }
             FightersSelectList = fightersList;
 
-            // Mapea las peleas para la tabla
-            var fightsResponse = await _fightApplication.GetFightsByTournament(TournamentId);
-            Fights = fightsResponse?.Fights?
+            var fightsList = await client.GetFromJsonAsync<List<FightDto>>($"api/fights/tournament/{TournamentId}");
+            Fights = fightsList?
                 .Select(f =>
                 {
                     string winnerName = null;

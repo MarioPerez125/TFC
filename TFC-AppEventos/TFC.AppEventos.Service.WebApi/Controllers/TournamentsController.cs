@@ -27,6 +27,12 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
             return Ok(await _tournamentsApplication.GetAllTournaments()); // Assuming GetTournamentByName can handle empty name to return all tournaments
         }
 
+        [HttpGet("organizer/{organizerId}")]
+        public async Task<ActionResult<GetTournamentResponse>> GetTournamentsByOrganizer(int organizerId)
+        {
+            return await _tournamentsApplication.GetTournamentByOrganizerId(organizerId);
+        }
+
         /// <summary>
         /// Obtiene un torneo específico por ID
         /// </summary>
@@ -105,10 +111,10 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
         /// <summary>
         /// Obtiene todos los participantes de un torneo
         /// </summary>
-        [HttpGet("{tournamentId}/participants")]
-        public async Task<ActionResult<IEnumerable<FightersDTO>>> GetParticipants(int tournamentId)
+        [HttpGet("{tournamentId}/peleadores")]
+        public async Task<ActionResult<IEnumerable<FightersDTO>>> GetPeleadores(int tournamentId)
         {
-            GetAllParticipantsResponse response = await _tournamentsApplication.GetParticipants(tournamentId);
+            GetAllParticipantsResponse response = await _tournamentsApplication.GetPeleadores(tournamentId);
 
             if (response.IsSuccess)
             {

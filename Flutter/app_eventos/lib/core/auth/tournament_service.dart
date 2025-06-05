@@ -1,4 +1,5 @@
 import 'package:app_eventos/core/api/endpoints.dart';
+import 'package:app_eventos/core/models/dto/fight_dto.dart';
 import 'package:app_eventos/core/models/dto/fighter_dto.dart';
 
 import '../api/api_client.dart';
@@ -53,5 +54,37 @@ class TournamentService {
       return TournamentDto.fromJson(response.data);
     }
     return null;
+  }
+
+  Future<List<FightDto>> getFightsByTournament(int tournamentId) async {
+    final response = await _apiClient.get(
+      'fights/by-tournament/$tournamentId',
+      requiresAuth: false,
+    );
+    if (response.statusCode == 200 && response.data is List) {
+      return (response.data as List)
+          .map((e) => FightDto.fromJson(e as Map<String, dynamic>))
+          .toList();
+    }
+    // Si el backend devuelve un objeto con la lista bajo una clave, ajusta aquí
+    if (response.data is Map && response.data['fights'] is List) {
+      return (response.data['fights'] as List)
+          .map((e) => FightDto.fromJson(e as Map<String, dynamic>))
+          .toList();
+    }
+    return [];
+  }
+
+  Future<bool> participarEnTorneo(int userId, int tournamentId) async {
+    final response = await _apiClient.post(
+      'tournaments/participar-en-torneo',
+      body: {
+        'participanteId': 0, // o null si el backend lo permite
+        'userId': userId,
+        'tournamentId': tournamentId,
+      },
+      requiresAuth: true,
+    );
+    return response.statusCode == 200;
   }
 }

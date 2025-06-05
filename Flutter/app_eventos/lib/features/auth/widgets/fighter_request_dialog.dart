@@ -22,12 +22,38 @@ class _FighterRequestDialogState extends State<FighterRequestDialog> {
   String? _selectedCategory;
   final TextEditingController _heightController = TextEditingController();
   final TextEditingController _reachController = TextEditingController();
+  bool _isLoading = false;
 
   @override
   void dispose() {
     _heightController.dispose();
     _reachController.dispose();
     super.dispose();
+  }
+
+  void _submit() {
+    if (_selectedCategory == null ||
+        _heightController.text.isEmpty ||
+        _reachController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Completa todos los campos')),
+      );
+      return;
+    }
+    setState(() {
+      _isLoading = true;
+    });
+    // Simulate a delay for loading
+    Future.delayed(const Duration(seconds: 2), () {
+      setState(() {
+        _isLoading = false;
+      });
+      Navigator.of(context).pop({
+        'category': _selectedCategory,
+        'height': int.tryParse(_heightController.text) ?? 0,
+        'reach': int.tryParse(_reachController.text) ?? 0,
+      });
+    });
   }
 
   @override
@@ -80,24 +106,45 @@ class _FighterRequestDialogState extends State<FighterRequestDialog> {
           child: const Text('Cancelar'),
         ),
         ElevatedButton(
-          onPressed: () {
-            if (_selectedCategory == null ||
-                _heightController.text.isEmpty ||
-                _reachController.text.isEmpty) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Completa todos los campos')),
-              );
-              return;
-            }
-            Navigator.of(context).pop({
-              'category': _selectedCategory,
-              'height': int.tryParse(_heightController.text) ?? 0,
-              'reach': int.tryParse(_reachController.text) ?? 0,
-            });
-          },
+          onPressed: _submit,
           child: const Text('Solicitar'),
         ),
       ],
+    );
+  }
+}
+
+class AppButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final bool loading;
+  final VoidCallback onPressed;
+
+  const AppButton({
+    super.key,
+    required this.label,
+    required this.icon,
+    this.loading = false,
+    required this.onPressed,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton.icon(
+      onPressed: loading ? null : onPressed,
+      icon: loading
+          ? const CircularProgressIndicator(
+              color: Colors.white,
+              strokeWidth: 2.0,
+            )
+          : Icon(icon),
+      label: Text(label),
+      style: ElevatedButton.styleFrom(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(18),
+        ),
+        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+      ),
     );
   }
 }

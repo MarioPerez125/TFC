@@ -17,7 +17,7 @@ namespace OrganizerWeb
 
             // Add services to the container.
             builder.Services.AddRazorPages();
-            builder.Services.AddHttpClient("ApiEventos", client =>
+            builder.Services.AddHttpClient("Api", client =>
             {
                 client.BaseAddress = new Uri("http://localhost:5263/");
             });

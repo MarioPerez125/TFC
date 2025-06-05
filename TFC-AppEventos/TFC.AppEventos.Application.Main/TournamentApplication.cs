@@ -72,7 +72,7 @@ namespace TFC.AppEventos.Application.Main
             }
         }
 
-        public async Task<GetAllParticipantsResponse> GetParticipants(int tournamentId)
+        public async Task<GetAllParticipantsResponse> GetPeleadores(int tournamentId)
         {
             GetAllParticipantsResponse response = new GetAllParticipantsResponse();
             try
@@ -81,7 +81,7 @@ namespace TFC.AppEventos.Application.Main
                 {
                     throw new Exception("El ID del torneo no puede ser menor o igual a cero");
                 }
-                return await _tournamentRepository.GetParticipants(tournamentId);
+                return await _tournamentRepository.GetPeleadores(tournamentId);
             }
             catch (Exception e)
             {

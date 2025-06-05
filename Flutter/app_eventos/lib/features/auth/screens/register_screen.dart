@@ -4,6 +4,9 @@ import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
 import 'package:provider/provider.dart';
 
+import '../widgets/app_text_field.dart';
+import '../widgets/app_button.dart';
+
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({Key? key}) : super(key: key);
 
@@ -201,12 +204,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 },
               ),
               const SizedBox(height: 20),
-              TextFormField(
+              AppTextField(
                 controller: _usernameController,
-                decoration: const InputDecoration(
-                  labelText: 'Usuario',
-                  prefixIcon: Icon(Icons.account_circle),
-                ),
+                label: 'Usuario',
+                icon: Icons.person,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Por favor ingresa tu usuario';
@@ -253,11 +254,24 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 30),
               SizedBox(
                 width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: _isLoading ? null : _submit,
-                  child: _isLoading
-                      ? const CircularProgressIndicator()
-                      : const Text('Registrarse'),
+                child: AppButton(
+                  label: 'Registrarse',
+                  icon: Icons.app_registration,
+                  loading: _isLoading,
+                  onPressed: _submit,
+                ),
+              ),
+              const SizedBox(height: 20),
+              TextButton(
+                onPressed: () {
+                  Navigator.pushReplacementNamed(context, '/login');
+                },
+                child: const Text(
+                  '¿Ya tienes una cuenta? Iniciar sesión',
+                  style: TextStyle(
+                    color: Colors.blue,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],

@@ -1,9 +1,11 @@
+import 'package:app_eventos/features/auth/widgets/app_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 
 import '../../../core/auth/auth_provider.dart';
 import 'register_screen.dart';
+import 'package:app_eventos/features/auth/widgets/app_button.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -88,14 +90,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   key: _formKey,
                   child: Column(
                     children: [
-                      TextFormField(
+                      AppTextField(
                         controller: _usernameController,
-                        decoration: const InputDecoration(
-                          labelText: 'Usuario',
-                          floatingLabelBehavior: FloatingLabelBehavior.never,
-
-                          prefixIcon: Icon(Icons.person),
-                        ),
+                        label: 'Usuario',
+                        icon: Icons.person,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Por favor ingresa tu usuario';
@@ -126,12 +124,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       const SizedBox(height: 30),
                       SizedBox(
                         width: double.infinity,
-                        child: ElevatedButton.icon(
-                          icon: const Icon(Icons.login),
-                          onPressed: _isLoading ? null : _submit,
-                          label: _isLoading
-                              ? const CircularProgressIndicator()
-                              : const Text('Iniciar Sesión'),
+                        child: AppButton(
+                          label: 'Iniciar Sesión',
+                          icon: Icons.login,
+                          loading: _isLoading,
+                          onPressed: _submit,
                         ),
                       ),
                     ],
