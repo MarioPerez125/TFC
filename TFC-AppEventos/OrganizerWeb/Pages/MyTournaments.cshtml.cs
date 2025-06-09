@@ -41,7 +41,6 @@ namespace OrganizerWeb.Pages
                 var result = await response.Content.ReadFromJsonAsync<GetTournamentResponse>();
                 Tournaments = result?.Tournament ?? new List<TournamentDto>();
 
-                // Ordenar por fecha de inicio descendente
                 Tournaments = Tournaments
                     .OrderByDescending(t => DateTime.TryParse(t.StartDate, out var dt) ? dt : DateTime.MinValue)
                     .ToList();
@@ -63,7 +62,7 @@ namespace OrganizerWeb.Pages
                 return Page();
             }
 
-            Tournament.OrganizerId = OrganizerId; // Asegúrate de setear el OrganizerId
+            Tournament.OrganizerId = OrganizerId; 
             var client = _httpClientFactory.CreateClient("Api");
             var response = await client.PostAsJsonAsync("api/tournaments/create-tournament", Tournament);
 

@@ -136,11 +136,8 @@ namespace TFC.AppEventos.Infraestructure.Repository
 
                 Fighter? fighter = _context.Fighters.FirstOrDefault(f => f.UserId == userId);
 
-                var tournamentIds = await _context.Fights
-    .Where(f => f.Fighter1Id == fighter.FighterId || f.Fighter2Id == fighter.FighterId)
-    .Select(f => f.TournamentId)
-    .Distinct()
-    .ToListAsync();
+                var tournamentIds = await _context.Fights.Where(f => f.Fighter1Id == fighter.FighterId || f.Fighter2Id == fighter.FighterId)
+                    .Select(f => f.TournamentId).Distinct().ToListAsync();
 
                 IEnumerable<TournamentDto> tournaments = await _context.Tournaments
                     .Where(t => tournamentIds.Contains(t.TournamentId))

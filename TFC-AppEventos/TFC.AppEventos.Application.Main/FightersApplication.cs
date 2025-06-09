@@ -73,14 +73,12 @@ namespace TFC.AppEventos.Application.Main
 
             try
             {
-                // Validaciones básicas
                 if (fighterDto == null)
                 {
                     response.ResponseCode = ResponseCodes.ERROR_USER_NOTFOUND;
                     throw new Exception("Los datos de autenticación no pueden ser nulos");
                 }
 
-                // Llamada al repositorio
                 return await _fightersRepository.RegisterFighter(fighterDto);
 
             }

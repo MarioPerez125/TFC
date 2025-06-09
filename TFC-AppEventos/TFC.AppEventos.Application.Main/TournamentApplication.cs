@@ -37,7 +37,7 @@ namespace TFC.AppEventos.Application.Main
                 {
                     throw new Exception("El tipo de deporte no puede ser nulo");
                 }
-                // Llamada al repositorio
+
                 return await _tournamentRepository.CreateTournament(tournamentDto, organizerId);
             }
             catch (Exception e)

@@ -18,13 +18,11 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
         {
             _tournamentsApplication = tournamentsApplication;
         }
-        /// <summary>
-        /// Obtiene todos los torneos
-        /// </summary>
+
         [HttpGet]
         public async Task<ActionResult<List<TournamentDto>>> GetAll()
         {
-            return Ok(await _tournamentsApplication.GetAllTournaments()); // Assuming GetTournamentByName can handle empty name to return all tournaments
+            return Ok(await _tournamentsApplication.GetAllTournaments()); 
         }
 
         [HttpGet("organizer/{organizerId}")]
@@ -33,9 +31,6 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
             return await _tournamentsApplication.GetTournamentByOrganizerId(organizerId);
         }
 
-        /// <summary>
-        /// Obtiene un torneo específico por ID
-        /// </summary>
         [HttpGet("{name}")]
         public async Task<ActionResult<List<TournamentDto>>> GetByName(string name)
         {
@@ -65,11 +60,7 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
             }
         }
 
-        /// <summary>
-        /// Crea un nuevo torneo (Requiere rol Organizer o Admin)
-        /// </summary>
         [HttpPost("create-tournament")]
-        //[Authorize(Roles = nameof(Roles.Organizer) + ","+ nameof(Roles.Admin))]
         public async Task<ActionResult<TournamentDto>> Create([FromBody] TournamentDto tournamentDto)
         {
             CreateTournamentResponse response = new CreateTournamentResponse();
@@ -88,9 +79,6 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
             }
         }
 
-        /// <summary>
-        /// Actualiza un torneo existente (Solo organizador o admin)
-        /// </summary>
         //[HttpPut("{id}")]
         //[Authorize(Roles = "Organizer,Admin")]
         //public async Task<IActionResult> Update(int id, [FromBody] TournamentDto tournamentDto)
@@ -98,9 +86,6 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
 
         //}
 
-        /// <summary>
-        /// Elimina un torneo (Solo organizador o admin)
-        /// </summary>
         //[HttpDelete("{id}")]
         //[Authorize(Roles = "Organizer,Admin")]
         //public async Task<IActionResult> Delete(int id)
@@ -108,9 +93,6 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
 
         //}
 
-        /// <summary>
-        /// Obtiene todos los participantes de un torneo
-        /// </summary>
         [HttpGet("{tournamentId}/peleadores")]
         public async Task<ActionResult<IEnumerable<FightersDTO>>> GetPeleadores(int tournamentId)
         {

@@ -24,9 +24,6 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
             _configuration = configuration;
         }
 
-        /// <summary>
-        /// Registra un nuevo usuario
-        /// </summary>
         [HttpPost("register")]
         public async Task<ActionResult<RegisterDTO>> Register([FromBody] RegisterDTO registerDTO)
         {
@@ -42,9 +39,6 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
             }
         }
 
-        /// <summary>
-        /// Inicia sesión y obtiene un token JWT
-        /// </summary>
         [HttpPost("login")]
         public async Task<ActionResult<LoginResponse>> Login([FromBody] AuthDto authDto)
         {
@@ -53,7 +47,6 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
             Console.WriteLine(PasswordUtils.PasswordDecoder("m8/Emcu1X2jiu0ozllvQzw=="));
             if (loginResponse.IsSuccess)
             {
-                // Generar token JWT
                 var token = GenerateJwtToken(loginResponse.User);
 
                 var response = new LoginResponse
@@ -98,7 +91,6 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
             var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            // Crear claims con los nombres correctos
             var claims = new List<Claim>
     {
         new Claim(JwtRegisteredClaimNames.Sub, user.Username),
@@ -106,11 +98,8 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
         new Claim("UserId", user.UserId.ToString()),
         new Claim("username", user.Username),
         
-        // Claim de role con el formato correcto
-        new Claim(ClaimTypes.Role, user.Role) // Esto generará "role" en lugar del nombre largo
+        new Claim(ClaimTypes.Role, user.Role) 
     };
-
-            // Si necesitas mantener compatibilidad con ambos formatos:
 
             var token = new JwtSecurityToken(
                 issuer: _configuration["Jwt:Issuer"],

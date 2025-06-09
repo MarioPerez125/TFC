@@ -21,10 +21,7 @@ namespace TFC.AppEventos.Service.WebApi
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
 
@@ -68,12 +65,10 @@ namespace TFC.AppEventos.Service.WebApi
                 };
             });
 
-            // Agregar después de builder.Services.AddSwaggerGen()
             builder.Services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "TFC AppEventos API", Version = "v1" });
 
-                // Configuración para JWT
                 c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
                 {
                     Description = "JWT Authorization header using the Bearer scheme. Example: \"Authorization: Bearer {token}\"",
@@ -102,7 +97,6 @@ namespace TFC.AppEventos.Service.WebApi
     });
             });
 
-            // ... resto de configuraciones
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowAll", policy =>
@@ -118,7 +112,6 @@ namespace TFC.AppEventos.Service.WebApi
             app.UseCors("AllowAll");
 
 
-            // Configure the HTTP request pipeline.
             if (app.Environment.IsDevelopment())
             {
                 app.UseSwagger();

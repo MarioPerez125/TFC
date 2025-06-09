@@ -21,7 +21,6 @@ namespace TFC.AppEventos.Application.Main
 
             try
             {
-                // Validaciones básicas
                 if (authDto == null)
                 {
                     response.ResponseCode = ResponseCodes.ERROR_USER_NOTFOUND;
@@ -39,10 +38,6 @@ namespace TFC.AppEventos.Application.Main
                     response.ResponseCode = ResponseCodes.ERROR_BAD_PASSWORD;
                     throw new Exception("La contraseña es requerida");
                 }
-
-
-
-                // Llamada al repositorio
                 return await _authRepository.Login(authDto);
 
             }
@@ -61,7 +56,6 @@ namespace TFC.AppEventos.Application.Main
 
             try
             {
-                // Validaciones básicas
                 if (registerDto == null)
                 {
                     response.ResponseCode = ResponseCodes.ERROR_USER_NOTFOUND;
@@ -92,13 +86,12 @@ namespace TFC.AppEventos.Application.Main
                     throw new Exception("El email es requerido");
                 }
 
-                // Validación simple de email
                 if (!registerDto.Email.Contains("@"))
                 {
                     response.ResponseCode = ResponseCodes.ERROR_BAD_EMAIL;
                     throw new Exception("El email no es válido");
                 }
-                // Llamada al repositorio
+
                 return await _authRepository.Register(registerDto);
 
             }
@@ -115,7 +108,6 @@ namespace TFC.AppEventos.Application.Main
             ChangeRoleResponse response = new ChangeRoleResponse();
             try
             {
-                // Validaciones básicas
                 if (authDto == null)
                 {
                     response.ResponseCode = ResponseCodes.ERROR_USER_NOTFOUND;
@@ -133,7 +125,7 @@ namespace TFC.AppEventos.Application.Main
                     response.ResponseCode = ResponseCodes.ERROR_BAD_PASSWORD;
                     throw new Exception("La contraseña es requerida");
                 }
-                // Llamada al repositorio
+
                 return await _authRepository.RegisterAsOrganizer(authDto);
             }
             catch (Exception ex)

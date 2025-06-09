@@ -13,8 +13,8 @@ namespace TFC.AppEventos.Domain.Entities
         public string Arena { get; set; }
         public string StartDate { get; set; }
         public string EndDate { get; set; }
-        public string SportType { get; set; } // "MMA", "Judo", etc.
-        // Clave foránea
+        public string SportType { get; set; } 
+        
         public int OrganizerId { get; set; }
 
     }

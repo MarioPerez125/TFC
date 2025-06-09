@@ -20,12 +20,7 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
             this._fightersApplication = fightersApplication;
         }
 
-
-        /// <summary>
-        /// Registra un usuario como participante en un torneo (Requiere rol Fighter)
-        /// </summary>
         [HttpPost("register-as-fighter")]
-        //[Authorize(Roles = "User")]
         public async Task<ActionResult<UserDto>> Register([FromBody] FightersDTO fighterDto)
         {
             ChangeRoleResponse response = await _fightersApplication.RegisterFighter(fighterDto);
@@ -40,11 +35,7 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
             }
         }
 
-        /// <summary>
-        /// Elimina un participante de un torneo (Solo el propio luchador, organizador o admin)
-        /// </summary>
         [HttpDelete("{id}")]
-        //[Authorize(Roles = nameof(Roles.Organizer))]
         public async Task<IActionResult> Unregister(int id)
         {
             bool boolean = await _fightersApplication.UnregisterFighter(id);
@@ -59,11 +50,7 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
             }
         }
 
-        /// <summary>
-        /// Obtiene los torneos en los que participa el usuario actual
-        /// </summary>
         [HttpGet("my-tournaments/{userId}")]
-        //[Authorize(Roles = nameof(Roles.Fighter))]
         public async Task<ActionResult<IEnumerable<TournamentDto>>> GetMyTournaments(int userId)
         {
 
@@ -80,7 +67,6 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
         }
 
         [HttpGet("user-fighter-info/{userId}")]
-        //[Authorize(Roles = nameof(Roles.Fighter))]
         public async Task<ActionResult<FightersDTO>> GetFighterInfo(int userId)
         {
             GetFighterInfoResponse response = await _fightersApplication.GetFighterInfo(userId);

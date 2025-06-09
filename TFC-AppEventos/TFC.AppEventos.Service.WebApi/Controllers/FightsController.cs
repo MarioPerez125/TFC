@@ -18,13 +18,7 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
             _fightApplication = fightApplication;
         }
 
-
-
-        /// <summary>
-        /// Programa un nuevo combate
-        /// </summary>
         [HttpPost("schedule-fight")]
-        //[Authorize(Roles = "Organizer,Admin")]
         public async Task<ActionResult> Schedule([FromBody] FightDto fightDto)
         {
             OrganizarPeleaResponse response = new OrganizarPeleaResponse();
@@ -39,9 +33,6 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
             }
         }
 
-        /// <summary>
-        /// Obtiene todos los combates de un torneo
-        /// </summary>
         [HttpGet("tournament/{tournamentId}")]
         public async Task<ActionResult<List<FightDto>>> GetByTournament(int tournamentId)
         {
@@ -57,10 +48,6 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
             }
         }
 
-        /// <summary>
-        /// Actualiza el resultado de un combate
-        /// </summary>
-        //[Authorize(Roles = "Organizer,Admin")]
         [HttpPut("set-winner")]
         public async Task<IActionResult> SetResult([FromBody] FightResultDto resultDto)
         {
@@ -68,9 +55,6 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
             return Ok(await _fightApplication.SetAWinner(resultDto));
         }
 
-        /// <summary>
-        /// Obtiene los combates de un participante específico
-        /// </summary>
         [HttpGet("fighter/{userId}")]
         public async Task<ActionResult<IEnumerable<FightDto>>> GetByFighter(int userId)
         {
@@ -84,15 +68,6 @@ namespace TFC.AppEventos.Service.WebApi.Controllers
                 return Ok(response.Fights);
             }
         }
-
-        /// <summary>
-        /// Cancela un combate programado
-        /// </summary>
-        //[HttpPut("{id}/cancel")]
-        //[Authorize(Roles = "Organizer,Admin")]
-        //public async Task<IActionResult> Cancel(int id)
-        //{
-        //}
 
         [HttpGet("by-tournament/{tournamentId}")]
         public async Task<ActionResult<GetFightsByTournamentResponse>> GetFightsByTournament(int tournamentId)

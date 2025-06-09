@@ -11,7 +11,7 @@ namespace TFC.AppEventos.Domain.Entities
         public int FightResultId { get; set; }
         public int FightId { get; set; }
         public int? WinnerId { get; set; }
-        public string Method { get; set; } // KO, TKO, Submission, Decision, etc.
-        public TimeSpan? Duration { get; set; } // Duration of the fight
+        public string Method { get; set; } 
+        public TimeSpan? Duration { get; set; } 
     }
 }

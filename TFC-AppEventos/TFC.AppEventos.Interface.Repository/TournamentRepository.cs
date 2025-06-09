@@ -31,7 +31,7 @@ namespace TFC.AppEventos.Infraestructure.Repository
                 Tournament tournament = new Tournament();
                 tournament.Name = tournamentDto.location;
                 tournament.StartDate = tournamentDto.StartDate;
-                tournament.Arena = tournamentDto.Arena; // Assuming Arena is part of the TournamentDto
+                tournament.Arena = tournamentDto.Arena; 
                 tournament.EndDate = tournamentDto.EndDate;
                 tournament.SportType = tournamentDto.SportType;
                 tournament.OrganizerId = organizerId;
@@ -45,7 +45,7 @@ namespace TFC.AppEventos.Infraestructure.Repository
                 {
                     TournamentId = tournament.TournamentId,
                     location = tournament.Name,
-                    Arena = tournament.Arena, // Assuming Arena is part of the TournamentDto
+                    Arena = tournament.Arena, 
                     StartDate = tournament.StartDate,
                     EndDate = tournament.EndDate,
                     SportType = tournament.SportType,
@@ -109,7 +109,6 @@ namespace TFC.AppEventos.Infraestructure.Repository
             var response = new GetAllParticipantsResponse();
             try
             {
-                // Incluye las peleas del torneo y los luchadores de cada pelea
                 var fighter1Query = from fight in _context.Fights
                                     where fight.TournamentId == tournamentId
                                     select fight.Fighter1Id;
@@ -172,12 +171,12 @@ namespace TFC.AppEventos.Infraestructure.Repository
         {
             GetTournamentResponse response = new GetTournamentResponse
             {
-                Tournament = new List<TournamentDto>() // Initialize the list to avoid null reference
+                Tournament = new List<TournamentDto>()
             };
 
             IEnumerable<Tournament>? tournament = await _context.Tournaments.Where(x => x.Name == name).ToListAsync();
 
-            if (tournament != null && tournament.Any()) // Check if the collection is not null and has elements
+            if (tournament != null && tournament.Any()) 
             {
                 foreach (var item in tournament)
                 {
@@ -185,7 +184,7 @@ namespace TFC.AppEventos.Infraestructure.Repository
                     {
                         TournamentId = item.TournamentId,
                         location = item.Name,
-                        Arena = item.Arena, // Assuming Arena is part of the TournamentDto
+                        Arena = item.Arena, 
                         StartDate = item.StartDate,
                         EndDate = item.EndDate,
                         SportType = item.SportType,
@@ -209,10 +208,10 @@ namespace TFC.AppEventos.Infraestructure.Repository
         {
            GetTournamentResponse getTournamentResponse = new GetTournamentResponse
             {
-                Tournament = new List<TournamentDto>() // Initialize the list to avoid null reference
+                Tournament = new List<TournamentDto>() 
             };
             IEnumerable<Tournament>? tournament = _context.Tournaments.Where(x => x.OrganizerId == id).ToList();
-            if (tournament != null && tournament.Any()) // Check if the collection is not null and has elements
+            if (tournament != null && tournament.Any()) 
             {
                 foreach (var item in tournament)
                 {
@@ -220,7 +219,7 @@ namespace TFC.AppEventos.Infraestructure.Repository
                     {
                         TournamentId = item.TournamentId,
                         location = item.Name,
-                        Arena = item.Arena, // Assuming Arena is part of the TournamentDto
+                        Arena = item.Arena, 
                         StartDate = item.StartDate,
                         EndDate = item.EndDate,
                         SportType = item.SportType,

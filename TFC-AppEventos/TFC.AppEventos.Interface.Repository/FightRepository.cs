@@ -74,11 +74,11 @@ namespace TFC.AppEventos.Infraestructure.Repository
                 {
                     fights.ForEach(f =>
                     {
-                        Fighter fighter = _context.Fighters.FirstOrDefault(fighter => fighter.FighterId == f.Fighter1Id);
-                        Fighter fighter2 = _context.Fighters.FirstOrDefault(fighter => fighter.FighterId == f.Fighter2Id);
+                        Fighter? fighter = _context.Fighters.FirstOrDefault(fighter => fighter.FighterId == f.Fighter1Id);
+                        Fighter? fighter2 = _context.Fighters.FirstOrDefault(fighter => fighter.FighterId == f.Fighter2Id);
 
-                        User user1 = _context.Users.FirstOrDefault(u => u.UserId == fighter.UserId);
-                        User user2 = _context.Users.FirstOrDefault(u => u.UserId == fighter2.UserId);
+                        User? user1 = _context.Users.FirstOrDefault(u => u.UserId == fighter.UserId);
+                        User? user2 = _context.Users.FirstOrDefault(u => u.UserId == fighter2.UserId);
 
                         response.Fights.Add(new FightDto
                         {
