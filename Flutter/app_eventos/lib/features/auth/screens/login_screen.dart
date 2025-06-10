@@ -35,7 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       final user = await authProvider.loginWithEmail(
-        '', // email no se usa, puedes dejarlo vacío
+        '',
         _passwordController.text.trim(),
         _usernameController.text.trim(),
       );

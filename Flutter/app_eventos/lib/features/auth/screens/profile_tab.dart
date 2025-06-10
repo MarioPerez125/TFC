@@ -371,7 +371,6 @@ class _ProfileRow extends StatelessWidget {
   }
 }
 
-// Widget para el botón de acción
 class _ActionButton extends StatelessWidget {
   final IconData icon;
   final String label;

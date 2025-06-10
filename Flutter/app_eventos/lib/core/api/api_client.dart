@@ -32,7 +32,7 @@ class ApiClient {
         }
       }
       final response = await _dio.post(
-        endpoint, // aquí endpoint = '/auth/register'
+        endpoint, 
         data: body,
         options: Options(headers: headers),
       );
@@ -64,7 +64,6 @@ class ApiClient {
           headers['Authorization'] = 'Bearer $token';
         }
       }
-      // Quita el '/' inicial si existe
       final cleanEndpoint = endpoint.startsWith('/')
           ? endpoint.substring(1)
           : endpoint;

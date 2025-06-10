@@ -100,11 +100,10 @@ class AuthProvider with ChangeNotifier {
 
   Future<void> setUserFromDto(UserDto userDto) async {
     _user = User.fromDto(userDto);
-    await _authService.saveUserDto(userDto); // <-- Añade esto
+    await _authService.saveUserDto(userDto);
     notifyListeners();
   }
 
   Future<void> _showResultDialog(BuildContext context, bool success, String message) async {
-    // Implementa la lógica para mostrar el diálogo con el resultado
   }
 }

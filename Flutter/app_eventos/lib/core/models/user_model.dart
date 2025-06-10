@@ -63,7 +63,7 @@ class User {
       userId: dto.userId,
       name: dto.name?.toString() ?? '',
       lastName: dto.lastName?.toString() ?? '',
-      phone: dto.phone?.toString(),
+      phone: dto.phone.toString(),
       birthDate: dto.birthDate != null ? DateTime.tryParse(dto.birthDate!) : null,
       city: dto.city?.toString(),
       country: dto.country?.toString(),

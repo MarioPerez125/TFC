@@ -85,7 +85,7 @@ class Service {
     print('Body enviado: ${registerDto.toJson()}');
     final response = await _apiClient.post(
       Endpoints.register,
-      body: registerDto.toJson(), // <-- Aquí va el mapa directamente
+      body: registerDto.toJson(),
       requiresAuth: false,
     );
     print('ruta: ${Endpoints.register}');

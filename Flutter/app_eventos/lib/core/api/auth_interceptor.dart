@@ -8,10 +8,8 @@ class AuthInterceptor extends http.BaseClient {
 
   @override
   Future<http.StreamedResponse> send(http.BaseRequest request) async {
-    // Obtener el token almacenado
     final token = await _getToken();
     
-    // Inyectar el token en el header "Authorization"
     if (token != null) {
       request.headers['Authorization'] = 'Bearer $token';
     }

@@ -43,7 +43,6 @@ class _FighterRequestDialogState extends State<FighterRequestDialog> {
     setState(() {
       _isLoading = true;
     });
-    // Simulate a delay for loading
     Future.delayed(const Duration(seconds: 2), () {
       setState(() {
         _isLoading = false;

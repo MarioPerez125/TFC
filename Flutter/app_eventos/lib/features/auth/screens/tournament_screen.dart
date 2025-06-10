@@ -49,7 +49,6 @@ class _TournamentsScreenState extends State<TournamentsScreen> {
     try {
       return DateTime.parse(date);
     } catch (_) {
-      // Intenta parsear solo la parte de la fecha si viene como 'yyyy-MM-dd'
       try {
         final parts = date.split('T').first.split('-');
         if (parts.length == 3) {
@@ -93,7 +92,6 @@ class _TournamentsScreenState extends State<TournamentsScreen> {
                 if (index < activeTournaments.length) {
                   return TournamentCard(tournament: activeTournaments[index]);
                 }
-                // Último elemento: el botón
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
                   child: SizedBox(

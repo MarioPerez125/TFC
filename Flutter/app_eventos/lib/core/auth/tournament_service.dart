@@ -10,16 +10,14 @@ class TournamentService {
 
   Future<List<TournamentDto>> getAllTournaments() async {
     final response = await _apiClient.get('/tournaments', requiresAuth: false);
-    print('Respuesta torneos: ${response.data}'); // <-- Añade esto
+    print('Respuesta torneos: ${response.data}');
 
-    // Si la respuesta es una lista directa:
     if (response.statusCode == 200 && response.data is List) {
       return (response.data as List)
           .map((e) => TournamentDto.fromJson(e as Map<String, dynamic>))
           .toList();
     }
 
-    // Si la respuesta es un objeto con la lista bajo una clave:
     if (response.data is Map && response.data['tournament'] is List) {
       return (response.data['tournament'] as List)
           .map((e) => TournamentDto.fromJson(e as Map<String, dynamic>))
@@ -66,7 +64,6 @@ class TournamentService {
           .map((e) => FightDto.fromJson(e as Map<String, dynamic>))
           .toList();
     }
-    // Si el backend devuelve un objeto con la lista bajo una clave, ajusta aquí
     if (response.data is Map && response.data['fights'] is List) {
       return (response.data['fights'] as List)
           .map((e) => FightDto.fromJson(e as Map<String, dynamic>))
@@ -79,7 +76,7 @@ class TournamentService {
     final response = await _apiClient.post(
       'tournaments/participar-en-torneo',
       body: {
-        'participanteId': 0, // o null si el backend lo permite
+        'participanteId': 0,
         'userId': userId,
         'tournamentId': tournamentId,
       },

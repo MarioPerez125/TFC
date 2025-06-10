@@ -6,5 +6,4 @@ class Endpoints {
   static const String fighterInfo = 'fighters/user-fighter-info';
   static const String createTournament = 'tournaments/create-tournament';
   static const String getFighters = 'fighters/user-fighter-list';
-  // ...otros endpoints...
 }

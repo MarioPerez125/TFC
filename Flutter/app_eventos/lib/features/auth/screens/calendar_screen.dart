@@ -60,7 +60,6 @@ class _CalendarTabState extends State<CalendarTab> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        // Fondo degradado
         Container(
           decoration: const BoxDecoration(
             gradient: LinearGradient(
@@ -170,7 +169,7 @@ class _CalendarTabState extends State<CalendarTab> {
                                             builder: (_) => FightsDialog(
                                               fights: fights,
                                               tournamentId: t.tournamentId,
-                                              showParticipateButton: false, // <--- Oculta el botón
+                                              showParticipateButton: false,
                                             ),
                                           );
                                         }

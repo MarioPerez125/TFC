@@ -19,7 +19,7 @@ class _MainScreenState extends State<MainScreen> {
     const TournamentsScreen(),
     const CalendarTab(),
     const ProfileTab(),
-    const FightersScreen(), // <-- Nueva pestaña
+    const FightersScreen(), 
   ];
 
   @override
@@ -109,7 +109,7 @@ class _MainScreenState extends State<MainScreen> {
             label: 'Perfil',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.people), // O el icono que prefieras
+            icon: Icon(Icons.people),
             label: 'Peleadores',
           ),
         ],

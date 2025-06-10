@@ -85,7 +85,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
 
       if (result != null && mounted) {
-        // Registro exitoso: redirige a login y muestra mensaje
         Navigator.pushReplacementNamed(context, '/login');
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('¡Registro exitoso! Inicia sesión para continuar.')),
