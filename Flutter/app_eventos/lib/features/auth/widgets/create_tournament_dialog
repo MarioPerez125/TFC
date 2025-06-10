@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../core/models/dto/tournament_dto.dart';
-import '../../../shared/widgets/app_text_field.dart';
-import '../../../shared/widgets/app_button.dart';
+import 'app_text_field.dart';
+import 'app_button.dart';
 
 class CreateTournamentDialog extends StatefulWidget {
   final int organizerId;

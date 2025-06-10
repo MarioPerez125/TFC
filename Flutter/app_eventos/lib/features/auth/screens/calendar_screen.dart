@@ -1,3 +1,4 @@
+import 'package:app_eventos/features/auth/widgets/fights_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:table_calendar/table_calendar.dart';
 import 'package:app_eventos/core/auth/tournament_service.dart';
@@ -35,6 +36,24 @@ class _CalendarTabState extends State<CalendarTab> {
   List<TournamentDto> _getEventsForDay(DateTime day) {
     final key = DateTime(day.year, day.month, day.day);
     return _events[key] ?? [];
+  }
+
+  String getHoraInicio(String startDate) {
+    try {
+      final date = DateTime.parse(startDate);
+      return '${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}';
+    } catch (_) {
+      return '';
+    }
+  }
+
+  String getFecha(String dateStr) {
+    try {
+      final date = DateTime.parse(dateStr);
+      return '${date.day.toString().padLeft(2, '0')}/${date.month.toString().padLeft(2, '0')}/${date.year}';
+    } catch (_) {
+      return dateStr;
+    }
   }
 
   @override
@@ -122,6 +141,8 @@ class _CalendarTabState extends State<CalendarTab> {
                             ? const Center(child: Text('No hay eventos este día', style: TextStyle(color: Colors.white, fontSize: 18)))
                             : ListView(
                                 children: _getEventsForDay(_selectedDay!).map((t) {
+                                  String fecha = t.startDate;
+                                  String fechaCorta = fecha.length >= 10 ? fecha.substring(0, 10) : fecha;
                                   return Card(
                                     color: Colors.white.withOpacity(0.95),
                                     margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
@@ -138,9 +159,22 @@ class _CalendarTabState extends State<CalendarTab> {
                                         ),
                                       ),
                                       subtitle: Text(
-                                        'Lugar: ${t.location}\nInicio: ${t.startDate.substring(11, 16)}',
+                                        'Lugar: ${t.location}\nInicio: ${getHoraInicio(t.startDate)}',
                                         style: const TextStyle(color: Colors.black87),
                                       ),
+                                      onTap: () async {
+                                        final fights = await TournamentService().getFightsByTournament(t.tournamentId);
+                                        if (context.mounted) {
+                                          showDialog(
+                                            context: context,
+                                            builder: (_) => FightsDialog(
+                                              fights: fights,
+                                              tournamentId: t.tournamentId,
+                                              showParticipateButton: false, // <--- Oculta el botón
+                                            ),
+                                          );
+                                        }
+                                      },
                                     ),
                                   );
                                 }).toList(),

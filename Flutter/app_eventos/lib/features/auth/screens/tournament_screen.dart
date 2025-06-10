@@ -45,6 +45,25 @@ class _TournamentsScreenState extends State<TournamentsScreen> {
     }
   }
 
+  DateTime? _tryParseDate(String date) {
+    try {
+      return DateTime.parse(date);
+    } catch (_) {
+      // Intenta parsear solo la parte de la fecha si viene como 'yyyy-MM-dd'
+      try {
+        final parts = date.split('T').first.split('-');
+        if (parts.length == 3) {
+          return DateTime(
+            int.parse(parts[0]),
+            int.parse(parts[1]),
+            int.parse(parts[2]),
+          );
+        }
+      } catch (_) {}
+      return null;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final user = Provider.of<AuthProvider>(context).user;
@@ -57,39 +76,48 @@ class _TournamentsScreenState extends State<TournamentsScreen> {
             return const Center(child: CircularProgressIndicator());
           }
           final tournaments = snapshot.data ?? [];
-          return ListView.builder(
-            padding: const EdgeInsets.all(8),
-            itemCount: user?.role == 'Organizer'
-                ? tournaments.length + 1
-                : tournaments.length,
-            itemBuilder: (context, index) {
-              if (index < tournaments.length) {
-                return TournamentCard(tournament: tournaments[index]);
-              }
-              // Último elemento: el botón
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 56,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.deepPurple,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18),
+          final now = DateTime.now();
+          List<TournamentDto> activeTournaments = tournaments.where((t) {
+            final end = _tryParseDate(t.endDate);
+            return end != null && end.isAfter(now);
+          }).toList();
+
+          return RefreshIndicator(
+            onRefresh: _refreshTournaments,
+            child: ListView.builder(
+              padding: const EdgeInsets.all(8),
+              itemCount: user?.role == 'Organizer'
+                  ? activeTournaments.length + 1
+                  : activeTournaments.length,
+              itemBuilder: (context, index) {
+                if (index < activeTournaments.length) {
+                  return TournamentCard(tournament: activeTournaments[index]);
+                }
+                // Último elemento: el botón
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 56,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.deepPurple,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                        elevation: 8,
                       ),
-                      elevation: 8,
-                    ),
-                    onPressed: () =>
-                        _showCreateTournamentDialog(context, user!.userId!),
-                    child: const Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [Icon(Icons.add, size: 28, color: Colors.white)],
+                      onPressed: () =>
+                          _showCreateTournamentDialog(context, user!.userId!),
+                      child: const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [Icon(Icons.add, size: 28, color: Colors.white)],
+                      ),
                     ),
                   ),
-                ),
-              );
-            },
+                );
+              },
+            ),
           );
         },
       ),

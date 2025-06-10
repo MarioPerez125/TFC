@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
 using TFC.AppEventos.Application.Interface;
 using TFC.AppEventos.Application.Main;
@@ -31,6 +32,15 @@ namespace OrganizerWeb
             builder.Services.AddScoped<IFightApplication, FightApplication>();
             builder.Services.AddScoped<IFightRepository, FightRepository>();
 
+            // Agrega servicios de autenticación con cookies
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.LoginPath = "/Index"; // Página de login
+                    options.AccessDeniedPath = "/Index"; // Página de acceso denegado
+                });
+
+            builder.Services.AddAuthorization();
 
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("SQLServerConnection")));
@@ -44,12 +54,13 @@ namespace OrganizerWeb
                 app.UseHsts();
             }
 
-
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
 
+            // Habilita autenticación y autorización
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapRazorPages();

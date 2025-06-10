@@ -1,7 +1,10 @@
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using TFC.AppEventos.Application.DTO;
 using TFC.AppEventos.Application.DTO.Responses;
@@ -53,6 +56,19 @@ namespace OrganizerWeb.Pages
                 var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
                 if (result?.IsSuccess == true)
                 {
+                    // Crear claims de autenticación
+                    var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.NameIdentifier, result.User.UserId.ToString()),
+                new Claim(ClaimTypes.Name, result.User.Username)
+                // Puedes agregar más claims si lo necesitas
+            };
+                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                    await HttpContext.SignInAsync(
+                        CookieAuthenticationDefaults.AuthenticationScheme,
+                        new ClaimsPrincipal(claimsIdentity));
+
                     return RedirectToPage("MyTournaments", new { organizerId = result.User.UserId });
                 }
                 else

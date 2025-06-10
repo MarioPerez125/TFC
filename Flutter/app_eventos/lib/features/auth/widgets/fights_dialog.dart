@@ -8,8 +8,14 @@ import '../../../core/auth/auth_provider.dart';
 class FightsDialog extends StatelessWidget {
   final List<FightDto> fights;
   final int tournamentId;
+  final bool showParticipateButton;
 
-  const FightsDialog({super.key, required this.fights, required this.tournamentId});
+  const FightsDialog({
+    super.key,
+    required this.fights,
+    required this.tournamentId,
+    this.showParticipateButton = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +35,14 @@ class FightsDialog extends StatelessWidget {
                 itemBuilder: (context, index) {
                   final f = fights[index];
                   final isFinished = f.status?.toLowerCase() == 'finalizada' || f.winnerId != null;
+                  String? ganador;
+                  if (f.winnerId != null) {
+                    if (f.winnerId == f.fighter1Id) {
+                      ganador = f.nombrePeleador1;
+                    } else if (f.winnerId == f.fighter2Id) {
+                      ganador = f.nombrePeleador2;
+                    }
+                  }
                   return Card(
                     color: isFinished ? Colors.green.shade50 : Colors.deepPurple.shade50,
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -69,6 +83,22 @@ class FightsDialog extends StatelessWidget {
                                     fontSize: 16,
                                   ),
                                 ),
+                                if (ganador != null) ...[
+                                  const SizedBox(height: 8),
+                                  Row(
+                                    children: [
+                                      const Icon(Icons.emoji_events, color: Colors.amber, size: 20),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        'Ganador: $ganador',
+                                        style: const TextStyle(
+                                          color: Colors.amber,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                                 const SizedBox(height: 8),
                                 Row(
                                   children: [
@@ -85,10 +115,6 @@ class FightsDialog extends StatelessWidget {
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
-                                    if (f.winnerId != null) ...[
-                                      const SizedBox(width: 10),
-                                      const Icon(Icons.emoji_events, color: Colors.amber, size: 20),
-                                    ],
                                   ],
                                 ),
                               ],
@@ -106,7 +132,7 @@ class FightsDialog extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
           child: const Text('Cerrar'),
         ),
-        if (user != null)
+        if (showParticipateButton && user != null)
           ElevatedButton.icon(
             label: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -131,14 +157,6 @@ class FightsDialog extends StatelessWidget {
               }
             },
           ),
-        AppButton(
-          label: 'Iniciar Sesión',
-          icon: Icons.login,
-          loading: false, // Cambia esto según tu lógica de carga
-          onPressed: () {
-            // Lógica para iniciar sesión
-          },
-        ),
       ],
     );
   }

@@ -49,12 +49,15 @@ class _MainScreenState extends State<MainScreen> {
               radius: 22,
             ),
             const SizedBox(width: 12),
-            Text(
-              '${user.role} - ${user.username}',
-              style: const TextStyle(
-                color: Colors.deepPurple,
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
+            Expanded(
+              child: Text(
+                '${user.role} - ${user.username}',
+                style: const TextStyle(
+                  color: Colors.deepPurple,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                ),
+                overflow: TextOverflow.ellipsis,
               ),
             ),
           ],
