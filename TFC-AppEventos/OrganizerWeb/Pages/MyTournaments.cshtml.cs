@@ -38,18 +38,14 @@ namespace OrganizerWeb.Pages
 
         public async Task<IActionResult> OnGetAsync(int organizerId)
         {
-            // Obtener el ID del usuario autenticado desde las claims
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
             if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out int userId))
             {
-                // No autenticado, redirigir a login
                 return RedirectToPage("/Index");
             }
 
-            // Validar que el organizerId de la URL coincide con el usuario autenticado
             if (organizerId != userId)
             {
-                // Acceso denegado, redirigir o mostrar error
                 return Forbid();
             }
 

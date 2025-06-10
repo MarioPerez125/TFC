@@ -56,12 +56,10 @@ namespace OrganizerWeb.Pages
                 var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
                 if (result?.IsSuccess == true)
                 {
-                    // Crear claims de autenticación
                     var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.NameIdentifier, result.User.UserId.ToString()),
                 new Claim(ClaimTypes.Name, result.User.Username)
-                // Puedes agregar más claims si lo necesitas
             };
                     var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 

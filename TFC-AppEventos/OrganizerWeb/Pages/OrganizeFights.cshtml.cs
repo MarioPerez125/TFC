@@ -30,7 +30,7 @@ namespace OrganizerWeb.Pages
         public List<FightViewModel> Fights { get; set; }
 
         private Dictionary<int, string> userIdToName = new();
-        public string ErrorMessage { get; set; }
+        public string? ErrorMessage { get; set; }
 
         [BindProperty]
         public FightResultInput FightResult { get; set; }
