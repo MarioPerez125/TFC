@@ -9,6 +9,7 @@ using TFC.AppEventos.Application.DTO.Responses;
 
 namespace OrganizerWeb.Pages
 {
+    [Authorize(Roles = "Organizer")]
     public class MyTournamentsModel : PageModel
     {
         private readonly IHttpClientFactory _httpClientFactory;
