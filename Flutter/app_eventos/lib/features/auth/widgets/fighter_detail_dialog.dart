@@ -27,8 +27,6 @@ class FighterDetailDialog extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _ProfileRow(icon: Icons.account_circle, label: 'Usuario', value: fighter.username),
-            _ProfileRow(icon: Icons.email, label: 'Email', value: fighter.email),
-            _ProfileRow(icon: Icons.phone, label: 'Teléfono', value: fighter.phone?.toString() ?? ''),
             _ProfileRow(icon: Icons.cake, label: 'Nacimiento', value: fighter.birthDate),
             _ProfileRow(icon: Icons.location_city, label: 'Ciudad', value: fighter.city),
             _ProfileRow(icon: Icons.flag, label: 'País', value: fighter.country),

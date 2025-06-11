@@ -132,7 +132,7 @@ class FightsDialog extends StatelessWidget {
           onPressed: () => Navigator.pop(context),
           child: const Text('Cerrar'),
         ),
-        if (showParticipateButton && user != null)
+        if (showParticipateButton && user != null && user.role == 'Fighter')
           ElevatedButton.icon(
             label: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),

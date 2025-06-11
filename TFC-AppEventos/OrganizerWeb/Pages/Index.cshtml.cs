@@ -22,6 +22,8 @@ namespace OrganizerWeb.Pages
 
         [BindProperty]
         public AuthDto Auth { get; set; }
+        [BindProperty]
+        public RegisterDTO Register { get; set; } // Para el formulario de registro
         public string? Result { get; set; }
 
         public void OnGet()
@@ -31,18 +33,47 @@ namespace OrganizerWeb.Pages
         public async Task<IActionResult> OnPostRegisterAsync()
         {
             var client = _httpClientFactory.CreateClient("Api");
-            var response = await client.PostAsJsonAsync("api/auth/register-as-organizer", Auth);
 
-            if (response.IsSuccessStatusCode)
+            // 1. Registro normal
+            var registerResponse = await client.PostAsJsonAsync("api/auth/register", Register);
+            if (!registerResponse.IsSuccessStatusCode)
             {
-                var result = await response.Content.ReadFromJsonAsync<ChangeRoleResponse>();
-                Result = result?.IsSuccess == true ? "Registro exitoso" : "Error en el registro";
-            }
-            else
-            {
-                Result = "Error en el registro";
+                Result = "Error en el registro: " + await registerResponse.Content.ReadAsStringAsync();
+                return Page();
             }
 
+            // 2. Registro como organizador (usa username y password del registro)
+            var authDto = new AuthDto { Username = Register.Username, Password = Register.Password };
+            var organizerResponse = await client.PostAsJsonAsync("api/auth/register-as-organizer", authDto);
+            if (!organizerResponse.IsSuccessStatusCode)
+            {
+                Result = "Error al asignar rol de organizador: " + await organizerResponse.Content.ReadAsStringAsync();
+                return Page();
+            }
+
+            // 3. Login automático
+            var loginResponse = await client.PostAsJsonAsync("api/auth/login", authDto);
+            if (loginResponse.IsSuccessStatusCode)
+            {
+                var result = await loginResponse.Content.ReadFromJsonAsync<LoginResponse>();
+                if (result?.IsSuccess == true)
+                {
+                    var claims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.NameIdentifier, result.User.UserId.ToString()),
+                        new Claim(ClaimTypes.Name, result.User.Username)
+                    };
+                    var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+
+                    await HttpContext.SignInAsync(
+                        CookieAuthenticationDefaults.AuthenticationScheme,
+                        new ClaimsPrincipal(claimsIdentity));
+
+                    return RedirectToPage("MyTournaments", new { organizerId = result.User.UserId });
+                }
+            }
+
+            Result = "Registro exitoso, pero error al iniciar sesión.";
             return Page();
         }
 
@@ -57,10 +88,10 @@ namespace OrganizerWeb.Pages
                 if (result?.IsSuccess == true)
                 {
                     var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.NameIdentifier, result.User.UserId.ToString()),
-                new Claim(ClaimTypes.Name, result.User.Username)
-            };
+                    {
+                        new Claim(ClaimTypes.NameIdentifier, result.User.UserId.ToString()),
+                        new Claim(ClaimTypes.Name, result.User.Username)
+                    };
                     var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
 
                     await HttpContext.SignInAsync(
