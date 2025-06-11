@@ -35,7 +35,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TFC.AppEventos.Infraestruct
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Web", "Web", "{7BEBA64F-1A51-44C8-83C6-A8CFF3BEB032}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OrganizerWeb", "OrganizerWeb\OrganizerWeb.csproj", "{A375A0AB-FF97-442E-9414-B836C1806D0E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TFC.AppEventos.Service.OrganizerWeb", "OrganizerWeb\TFC.AppEventos.Service.OrganizerWeb.csproj", "{A375A0AB-FF97-442E-9414-B836C1806D0E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
