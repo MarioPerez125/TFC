@@ -16,7 +16,6 @@ namespace OrganizerWeb
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
             builder.Services.AddRazorPages();
             builder.Services.AddHttpClient("Api", client =>
             {
@@ -32,12 +31,11 @@ namespace OrganizerWeb
             builder.Services.AddScoped<IFightApplication, FightApplication>();
             builder.Services.AddScoped<IFightRepository, FightRepository>();
 
-            // Agrega servicios de autenticación con cookies
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
                 .AddCookie(options =>
                 {
-                    options.LoginPath = "/Index"; // Página de login
-                    options.AccessDeniedPath = "/Index"; // Página de acceso denegado
+                    options.LoginPath = "/Index"; 
+                    options.AccessDeniedPath = "/Index"; 
                 });
 
             builder.Services.AddAuthorization();
@@ -45,12 +43,10 @@ namespace OrganizerWeb
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("SQLServerConnection")));
 
-            // Configure the HTTP request pipeline.
             var app = builder.Build();
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
@@ -59,7 +55,6 @@ namespace OrganizerWeb
 
             app.UseRouting();
 
-            // Habilita autenticación y autorización
             app.UseAuthentication();
             app.UseAuthorization();
 
