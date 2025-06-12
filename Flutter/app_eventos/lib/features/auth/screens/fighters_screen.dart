@@ -72,107 +72,112 @@ class _FightersScreenState extends State<FightersScreen> {
           ),
         ),
         Expanded(
-          child: _filteredFighters.isEmpty
-              ? const Center(child: Text('No hay peleadores registrados.'))
-              : ListView.separated(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: _filteredFighters.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 16),
-                  itemBuilder: (context, index) {
-                    final f = _filteredFighters[index];
-                    return InkWell(
-                      borderRadius: BorderRadius.circular(18),
-                      onTap: () {
-                        showDialog(
-                          context: context,
-                          builder: (_) => FighterDetailDialog(fighter: f),
-                        );
-                      },
-                      child: Card(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18),
-                        ),
-                        elevation: 6,
-                        shadowColor: Colors.deepPurple.withOpacity(0.15),
-                        child: Padding(
-                          padding: const EdgeInsets.all(18),
-                          child: Row(
-                            children: [
-                              CircleAvatar(
-                                radius: 32,
-                                backgroundColor: Colors.deepPurple.shade100,
-                                child: const Icon(
-                                  Icons.sports_mma,
-                                  color: Colors.deepPurple,
-                                  size: 32,
+          child: RefreshIndicator(
+            onRefresh: () async {
+              _loadFighters();
+            },
+            child: _filteredFighters.isEmpty
+                ? const Center(child: Text('No hay peleadores registrados.'))
+                : ListView.separated(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: _filteredFighters.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 16),
+                    itemBuilder: (context, index) {
+                      final f = _filteredFighters[index];
+                      return InkWell(
+                        borderRadius: BorderRadius.circular(18),
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (_) => FighterDetailDialog(fighter: f),
+                          );
+                        },
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18),
+                          ),
+                          elevation: 6,
+                          shadowColor: Colors.deepPurple.withOpacity(0.15),
+                          child: Padding(
+                            padding: const EdgeInsets.all(18),
+                            child: Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: 32,
+                                  backgroundColor: Colors.deepPurple.shade100,
+                                  child: const Icon(
+                                    Icons.sports_mma,
+                                    color: Colors.deepPurple,
+                                    size: 32,
+                                  ),
                                 ),
-                              ),
-                              const SizedBox(width: 18),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      '${f.name} ${f.lastName}',
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 18,
-                                        color: Colors.deepPurple,
+                                const SizedBox(width: 18),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        '${f.name} ${f.lastName}',
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18,
+                                          color: Colors.deepPurple,
+                                        ),
                                       ),
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      '@${f.username}',
-                                      style: TextStyle(
-                                        color: Colors.deepPurple.shade300,
-                                        fontSize: 14,
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        '@${f.username}',
+                                        style: TextStyle(
+                                          color: Colors.deepPurple.shade300,
+                                          fontSize: 14,
+                                        ),
                                       ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Wrap(
-                                      crossAxisAlignment:
-                                          WrapCrossAlignment.center,
-                                      spacing: 8,
-                                      runSpacing: 4,
-                                      children: [
-                                        Text(
-                                          f.weightClass,
-                                          style: const TextStyle(fontSize: 15),
-                                        ),
-                                     ],
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Row(
-                                      children: [
-                                        _StatChip(
-                                          label: 'W',
-                                          value: f.wins,
-                                          color: Colors.green,
-                                        ),
-                                        const SizedBox(width: 6),
-                                        _StatChip(
-                                          label: 'L',
-                                          value: f.losses,
-                                          color: Colors.red,
-                                        ),
-                                        const SizedBox(width: 6),
-                                        _StatChip(
-                                          label: 'D',
-                                          value: f.draws,
-                                          color: Colors.orange,
-                                        ),
-                                      ],
-                                    ),
-                                  ],
+                                      const SizedBox(height: 8),
+                                      Wrap(
+                                        crossAxisAlignment:
+                                            WrapCrossAlignment.center,
+                                        spacing: 8,
+                                        runSpacing: 4,
+                                        children: [
+                                          Text(
+                                            f.weightClass,
+                                            style: const TextStyle(fontSize: 15),
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 8),
+                                      Row(
+                                        children: [
+                                          _StatChip(
+                                            label: 'W',
+                                            value: f.wins,
+                                            color: Colors.green,
+                                          ),
+                                          const SizedBox(width: 6),
+                                          _StatChip(
+                                            label: 'L',
+                                            value: f.losses,
+                                            color: Colors.red,
+                                          ),
+                                          const SizedBox(width: 6),
+                                          _StatChip(
+                                            label: 'D',
+                                            value: f.draws,
+                                            color: Colors.orange,
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                    );
-                  },
-                ),
+                      );
+                    },
+                  ),
+          ),
         ),
       ],
     );

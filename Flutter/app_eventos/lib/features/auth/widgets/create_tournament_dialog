@@ -101,12 +101,6 @@ class _CreateTournamentDialogState extends State<CreateTournamentDialog> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              AppTextField(
-                controller: _usernameController,
-                label: 'Usuario',
-                icon: Icons.person,
-                validator: (v) => v == null || v.isEmpty ? 'Obligatorio' : null,
-              ),
               const SizedBox(height: 12),
               TextFormField(
                 controller: _locationController,
